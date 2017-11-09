@@ -27,7 +27,7 @@
         android:layout_marginRight="16dp"
         app:layoutManager="LinearLayoutManager"
         tools:context="hu.bme.aut.dbalazs.fitnesstracker.WorkoutListActivity"
-        tools:listitem="@layout/workout_list_content" />
+        tools:listitem="@layout/workout_item" />
 
     <FrameLayout
         android:id="@+id/workout_detail_container"

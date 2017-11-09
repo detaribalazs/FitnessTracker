@@ -6,11 +6,11 @@ import java.util.ArrayList;
  * Created by Balazs on 2017. 11. 08..
  */
 
-public class Excercise {
+public class Exercise {
     private String name;
     private ArrayList<Series> series;
 
-    public Excercise(ArrayList<Series> reps, String name) {
+    public Exercise(ArrayList<Series> reps, String name) {
         this.series = reps;
         this.name = name;
     }

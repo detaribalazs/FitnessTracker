@@ -18,7 +18,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".WorkoutDetailActivity"
+            android:name=".ExerciseListActivity"
             android:label="@string/title_workout_detail"
             android:parentActivityName=".WorkoutListActivity"
             android:theme="@style/DarkDefault">

@@ -11,6 +11,6 @@
     android:layout_marginRight="2dp"
     app:layoutManager="LinearLayoutManager"
     tools:context="hu.bme.aut.dbalazs.fitnesstracker.WorkoutListActivity"
-    tools:listitem="@layout/workout_list_content" >
+    tools:listitem="@layout/workout_item" >
 
 </android.support.v7.widget.RecyclerView>

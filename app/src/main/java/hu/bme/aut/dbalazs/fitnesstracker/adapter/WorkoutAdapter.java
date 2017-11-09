@@ -16,8 +16,8 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 import hu.bme.aut.dbalazs.fitnesstracker.R;
-import hu.bme.aut.dbalazs.fitnesstracker.WorkoutDetailActivity;
-import hu.bme.aut.dbalazs.fitnesstracker.WorkoutDetailFragment;
+import hu.bme.aut.dbalazs.fitnesstracker.ExerciseListActivity;
+import hu.bme.aut.dbalazs.fitnesstracker.ExerciseListFragment;
 import hu.bme.aut.dbalazs.fitnesstracker.model.Workout;
 
 public class WorkoutAdapter extends RecyclerView.Adapter<WorkoutAdapter.WorkoutViewHolder> {
@@ -49,8 +49,8 @@ public class WorkoutAdapter extends RecyclerView.Adapter<WorkoutAdapter.WorkoutV
     @Override
     public WorkoutViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         //LayoutInflater inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        //inflater.inflate(R.layout.workout_list_content, parent, false);
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.workout_list_content, parent, false);
+        //inflater.inflate(R.layout.workout_item, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.workout_item, parent, false);
         return new WorkoutViewHolder(v);
     }
 
@@ -60,43 +60,25 @@ public class WorkoutAdapter extends RecyclerView.Adapter<WorkoutAdapter.WorkoutV
         SimpleDateFormat sdf = new SimpleDateFormat("MMM d, EEE");
         String date = sdf.format(workoutList.get(position).getWoDate());
         holder.woDateTv.setText(date);
-        String workoutType;
-        switch (workoutList.get(position).getWoType()){
-            case ARM_WORKOUT:
-                workoutType = "Arm";
-                break;
-            case BACK_WORKOUT:
-                workoutType = "Back";
-                break;
-            case CHEST_WORKOUT:
-                workoutType = "Chest";
-                break;
-            case SHOULDER_WORKOUT:
-                workoutType = "Shoulder";
-                break;
-            case LEG_WORKOUT:
-                workoutType = "Leg";
-                break;
-            default:
-                workoutType = "Unknown";
-                break;
-        }
+        String workoutType = Workout.typeToString(workoutList.get(position).getWoType());
         holder.woTypeTV.setText(workoutType);
         holder.woFrameRL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (mTwoPane) {
                     Bundle arguments = new Bundle();
-                    arguments.putString(WorkoutDetailFragment.ARG_ITEM_ID, holder.woItem.getWoType().name());
-                    WorkoutDetailFragment fragment = new WorkoutDetailFragment();
+                    arguments.putString(ExerciseListFragment.EXERCISE_TYPE, holder.woItem.getWoType().name());
+                    arguments.putLong(ExerciseListFragment.EXERCISE_DATE, holder.woItem.getWoDate().getTime());
+                    ExerciseListFragment fragment = new ExerciseListFragment();
                     fragment.setArguments(arguments);
                     activity.getSupportFragmentManager().beginTransaction()
                             .replace(R.id.workout_detail_container, fragment)
                             .commit();
                 } else {
                     Context context = view.getContext();
-                    Intent intent = new Intent(context, WorkoutDetailActivity.class);
-                    intent.putExtra(WorkoutDetailFragment.ARG_ITEM_ID, holder.woItem.getWoType().name());
+                    Intent intent = new Intent(context, ExerciseListActivity.class);
+                    intent.putExtra(ExerciseListFragment.EXERCISE_TYPE, holder.woItem.getWoType().name());
+                    intent.putExtra(ExerciseListFragment.EXERCISE_DATE, holder.woItem.getWoDate().getTime());
 
                     context.startActivity(intent);
                 }
