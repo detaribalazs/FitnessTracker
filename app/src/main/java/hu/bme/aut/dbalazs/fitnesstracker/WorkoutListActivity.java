@@ -14,13 +14,11 @@ import java.util.Date;
 import hu.bme.aut.dbalazs.fitnesstracker.adapter.WorkoutAdapter;
 import hu.bme.aut.dbalazs.fitnesstracker.model.Workout;
 
-public class WorkoutListActivity extends AppCompatActivity {
+public class WorkoutListActivity extends AppCompatActivity implements WorkoutCreateFragment.WorkoutCreatedI {
 
-    /**
-     * Whether or not the activity is in two-pane mode, i.e. running on a tablet
-     * device.
-     */
     private boolean mTwoPane;
+    private ArrayList<Workout> woList;
+    private WorkoutAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,19 +29,23 @@ public class WorkoutListActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                addWorkout();
+                Snackbar.make(view, "New Workout added", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
 
         View recyclerView = findViewById(R.id.workout_list);
         assert recyclerView != null;
-        ArrayList<Workout> woList = createWorkoutList();
+        woList = createWorkoutList();
 
         if (findViewById(R.id.workout_detail_container) != null) {
             mTwoPane = true;
         }
         setupRecyclerView((RecyclerView) recyclerView, woList);
+    }
+
+    private void addWorkout(){
     }
 
     // TODO delete
@@ -57,7 +59,13 @@ public class WorkoutListActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView, ArrayList<Workout> woList) {
-        recyclerView.setAdapter(new WorkoutAdapter(woList, mTwoPane, this));
+        adapter = new WorkoutAdapter(woList, mTwoPane, this);
+        recyclerView.setAdapter(adapter);
     }
 
+    @Override
+    public void onWorkoutCreated(Workout newWo) {
+        woList.add(newWo);
+        adapter.notifyDataSetChanged();
+    }
 }
