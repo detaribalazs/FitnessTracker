@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import hu.bme.aut.dbalazs.fitnesstracker.adapter.ExerciseAdapter;
-import hu.bme.aut.dbalazs.fitnesstracker.adapter.WorkoutAdapter;
 import hu.bme.aut.dbalazs.fitnesstracker.dummy.DummyContent;
 import hu.bme.aut.dbalazs.fitnesstracker.model.Exercise;
 import hu.bme.aut.dbalazs.fitnesstracker.model.Series;
@@ -42,7 +41,6 @@ public class ExerciseListFragment extends Fragment {
     private DummyContent.DummyItem mItem;
     private ArrayList<Exercise> exerciseList; //TODO init this with query
     private ExerciseAdapter adapter;
-    private WorkoutAdapter adapter2;
 
     public ExerciseListFragment() {
     }
@@ -51,7 +49,6 @@ public class ExerciseListFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         adapter = new ExerciseAdapter(createExerciseList(), (AppCompatActivity)getActivity());
-        adapter2 = new WorkoutAdapter(createWorkoutList(), false, (AppCompatActivity)getActivity());
 
         if (getArguments().containsKey(EXERCISE_TYPE) && getArguments().containsKey(EXERCISE_DATE)) {
             // Load the dummy content specified by the fragment

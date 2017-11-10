@@ -4,12 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static hu.bme.aut.dbalazs.fitnesstracker.model.Workout.WorkoutType.ARM_WORKOUT;
-import static hu.bme.aut.dbalazs.fitnesstracker.model.Workout.WorkoutType.BACK_WORKOUT;
-import static hu.bme.aut.dbalazs.fitnesstracker.model.Workout.WorkoutType.CHEST_WORKOUT;
-import static hu.bme.aut.dbalazs.fitnesstracker.model.Workout.WorkoutType.LEG_WORKOUT;
-import static hu.bme.aut.dbalazs.fitnesstracker.model.Workout.WorkoutType.SHOULDER_WORKOUT;
-
 public class Workout {
     public enum WorkoutType {
         ARM_WORKOUT, CHEST_WORKOUT, SHOULDER_WORKOUT, LEG_WORKOUT, BACK_WORKOUT };
@@ -25,10 +19,16 @@ public class Workout {
         woDate = new Date(milis);
     }
 
-    public Workout(WorkoutType woType, ArrayList<Exercise> exerciseList){
+    public Workout(WorkoutType woType, ArrayList<Exercise> exerciseList, Date date){
         this.woType = woType;
         this.exerciseList = exerciseList;
-        woDate = new Date();
+        if(date == null) {
+            woDate = new Date();
+        }
+        else{
+            this.woDate = date;
+        }
+
     }
 
     public WorkoutType getWoType() {

@@ -4,9 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
@@ -15,9 +17,10 @@ import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-import hu.bme.aut.dbalazs.fitnesstracker.R;
 import hu.bme.aut.dbalazs.fitnesstracker.ExerciseListActivity;
 import hu.bme.aut.dbalazs.fitnesstracker.ExerciseListFragment;
+import hu.bme.aut.dbalazs.fitnesstracker.R;
+import hu.bme.aut.dbalazs.fitnesstracker.WorkoutListActivity;
 import hu.bme.aut.dbalazs.fitnesstracker.model.Workout;
 
 public class WorkoutAdapter extends RecyclerView.Adapter<WorkoutAdapter.WorkoutViewHolder> {
@@ -55,7 +58,7 @@ public class WorkoutAdapter extends RecyclerView.Adapter<WorkoutAdapter.WorkoutV
     }
 
     @Override
-    public void onBindViewHolder(final WorkoutViewHolder holder, int position) {
+    public void onBindViewHolder(final WorkoutViewHolder holder, final int position) {
         holder.woItem = workoutList.get(position);
         SimpleDateFormat sdf = new SimpleDateFormat("MMM d, EEE");
         String date = sdf.format(workoutList.get(position).getWoDate());
@@ -87,9 +90,29 @@ public class WorkoutAdapter extends RecyclerView.Adapter<WorkoutAdapter.WorkoutV
         holder.woFrameRL.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
+                PopupMenu popup = new PopupMenu(view.getContext(), view);
+                popup.inflate(R.menu.workout_menu);
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        if (R.id.workoutDeleteDel == item.getItemId()) {
+                            ((WorkoutListActivity)activity).removeWorkout(position);
+                        }
+                        return false;
+                    }
+                });
+                popup.show();
                 return false;
             }
         });
+    }
+
+    public void addWorkout(Workout wo){
+        workoutList.add(wo);
+    }
+
+    public void removeWorkout(int position){
+        workoutList.remove(position);
     }
 
     @Override
