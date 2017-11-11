@@ -41,7 +41,6 @@ public class WorkoutListActivity extends AppCompatActivity implements WorkoutCre
                         .addToBackStack(null)
                         .show(fragment)
                         .commit();
-                /*;*/
             }
         });
 

@@ -79,7 +79,7 @@ public class WorkoutCreateFragment extends DialogFragment {
 
         final Spinner spinner = rootView.findViewById(R.id.workoutAddSpinner);
         ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(context,
-                R.array.workout_types, android.R.layout.simple_spinner_item);
+                R.array.workout_types, R.layout.workout_add_spinner);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(spinnerAdapter);
 

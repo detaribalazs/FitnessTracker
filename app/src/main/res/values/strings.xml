@@ -1,11 +1,12 @@
 <resources>
     <string name="app_name">FitnessTracker</string>
     <string name="title_workout_list">Workouts</string>
-    <string name="title_workout_detail">Workout</string>
+    <string name="title_workout_detail">Exercises</string>
     <string name="addWorkoutTitle">New workout</string>
     <string name="addWorkoutDate">Date</string>
     <string name="workoutDelete">Delete</string>
     <string name="workoutDeleteCancel">Cancel</string>
+    <string name="exerciseName">Name</string>
     <string-array name="workout_types">
         <item>Arm</item>
         <item>Back</item>

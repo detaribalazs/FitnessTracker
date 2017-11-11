@@ -6,4 +6,7 @@
     <dimen name="item_width">200dp</dimen>
     <dimen name="text_margin">16dp</dimen>
     <dimen name="item_offset">1dp</dimen>
+    <dimen name="workoutAddFragmentTextSize">30dp</dimen>
+    <dimen name="workoutAddFragmentSpinnerSize">20dp</dimen>
+    <dimen name="exerciseNameSize">30dp</dimen>
 </resources>
