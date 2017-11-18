@@ -33,7 +33,7 @@ public class WorkoutCreateFragment extends DialogFragment {
     }
 
     public interface CreateWorkoutListener {
-        public void onWorkoutCreated(Workout newWo);
+        void onWorkoutCreated(Workout newWo);
     }
 
     @Override

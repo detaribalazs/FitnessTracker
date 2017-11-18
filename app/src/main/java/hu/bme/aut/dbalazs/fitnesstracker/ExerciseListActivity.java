@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -11,19 +12,22 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 
+import hu.bme.aut.dbalazs.fitnesstracker.model.Exercise;
+
 /**
  * An activity representing a single Workout detail screen. This
  * activity is only used narrow width devices. On tablet-size devices,
  * item details are presented side-by-side with a list of items
  * in a {@link WorkoutListActivity}.
  */
-public class ExerciseListActivity extends AppCompatActivity {
+public class ExerciseListActivity extends AppCompatActivity implements ExerciseCreateFragment.CreateExerciseListener {
 
-    public static final int EXERCISE_LIST_ACTVITY_REQUEST_CODE = 1;
+    private ExerciseListFragment fragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.fragment = new ExerciseListFragment();
         setContentView(R.layout.exercise_list_activity);
         Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         //setSupportActionBar(toolbar);
@@ -32,8 +36,10 @@ public class ExerciseListActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own detail action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                ExerciseCreateFragment newFragment = new ExerciseCreateFragment();
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                transaction.add(newFragment, ExerciseCreateFragment.TAG)
+                           .commit();
             }
         });
 
@@ -51,7 +57,6 @@ public class ExerciseListActivity extends AppCompatActivity {
                     getIntent().getStringExtra(ExerciseListFragment.EXERCISE_TYPE));
             arguments.putLong(ExerciseListFragment.EXERCISE_DATE,
                     getIntent().getLongExtra(ExerciseListFragment.EXERCISE_DATE, 0));
-            ExerciseListFragment fragment = new ExerciseListFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.exercise_list_fragment, fragment)
@@ -74,5 +79,12 @@ public class ExerciseListActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onExerciseCreated(String exName) {
+        fragment.addExercise(new Exercise(exName));
+        Snackbar.make(findViewById(android.R.id.content), "New exercise added!", Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show();
     }
 }

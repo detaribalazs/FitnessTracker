@@ -12,7 +12,6 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import hu.bme.aut.dbalazs.fitnesstracker.ExerciseListActivity;
 import hu.bme.aut.dbalazs.fitnesstracker.R;
 import hu.bme.aut.dbalazs.fitnesstracker.SeriesListActivity;
 import hu.bme.aut.dbalazs.fitnesstracker.SeriesListFragment;
@@ -62,7 +61,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
                 if(!twoPane) {
                     Intent intent = new Intent(activity, SeriesListActivity.class);
                     intent.putExtra(SeriesListFragment.SERIES_EXERCISE_NAME_TAG, exerciseList.get(position).getName());
-                    activity.startActivityForResult(intent, ExerciseListActivity.EXERCISE_LIST_ACTVITY_REQUEST_CODE);
+                    activity.startActivity(intent);//, ExerciseListActivity.EXERCISE_LIST_ACTVITY_REQUEST_CODE);
                 }
                 else {
                     /*

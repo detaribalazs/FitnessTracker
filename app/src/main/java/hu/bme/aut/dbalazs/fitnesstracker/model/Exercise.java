@@ -15,6 +15,11 @@ public class Exercise {
         this.name = name;
     }
 
+    public Exercise(String name){
+        this.name = name;
+        this.series = new ArrayList<>();
+    }
+
     public String getName() {
         return name;
     }

@@ -15,6 +15,11 @@ public class Series {
         this.seriesId = id;
     }
 
+    public Series(int weight, int reps) {
+        this.weight = weight;
+        this.reps = reps;
+    }
+
     public int getWeight() {
         return weight;
     }
@@ -29,5 +34,13 @@ public class Series {
 
     public void setReps(int reps) {
         this.reps = reps;
+    }
+
+    public void setSeriesId(int seriesId) {
+        this.seriesId = seriesId;
+    }
+
+    public int getSeriesId() {
+        return seriesId;
     }
 }

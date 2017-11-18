@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,7 +30,8 @@ public class SeriesListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        adapter = new SeriesAdapter(createSeriesList(), (AppCompatActivity)getActivity());
+        seriesList = createSeriesList();
+        adapter = new SeriesAdapter(seriesList, (AppCompatActivity)getActivity(), this, twoPane);
 
         /* set toolbar title to the current exercise */
         if (getArguments().containsKey(SERIES_EXERCISE_NAME_TAG)) {
@@ -51,9 +52,19 @@ public class SeriesListFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.series_list, container, false);
         RecyclerView seriesListRV = (RecyclerView) rootView;
         //exListRV.setLayoutManager(new GridLayoutManager(getActivity(), 2));
-        seriesListRV.setLayoutManager(new GridLayoutManager(getActivity(), 2));
+        seriesListRV.setLayoutManager(new LinearLayoutManager(getActivity()));
         seriesListRV.setAdapter(adapter);
         return rootView;
+    }
+
+    public void removeSerie(int position){
+        seriesList.remove(position);
+        adapter.notifyDataSetChanged();
+    }
+
+    public void addSerie(Series newSerie){
+        seriesList.add(newSerie);
+        adapter.notifyDataSetChanged();
     }
 
     private ArrayList<Series> createSeriesList()

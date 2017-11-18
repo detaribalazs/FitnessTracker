@@ -42,7 +42,8 @@ public class ExerciseListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        adapter = new ExerciseAdapter(createExerciseList(), (AppCompatActivity)getActivity(), twoPane);
+        exerciseList = createExerciseList();
+        adapter = new ExerciseAdapter(exerciseList, (AppCompatActivity)getActivity(), twoPane);
 
         if (getArguments().containsKey(EXERCISE_TYPE) && getArguments().containsKey(EXERCISE_DATE)) {
             // Load the dummy content specified by the fragment
@@ -97,6 +98,17 @@ public class ExerciseListFragment extends Fragment {
         }
     }
 
+    public void addExercise(Exercise newExercise){
+        exerciseList.add(newExercise);
+        adapter.notifyDataSetChanged();
+    }
+
+    public void removeExerciseList(int position){
+        exerciseList.remove(position);
+        adapter.notifyDataSetChanged();
+    }
+
+    //TODO delete
     private ArrayList<Exercise> createExerciseList(){
         ArrayList<Series> s1 = new ArrayList<Series>();
         s1.add(new Series(50, 8, 1));
@@ -116,15 +128,5 @@ public class ExerciseListFragment extends Fragment {
         exList.add(new Exercise(s2, "Gugolás"));
 
         return exList;
-    }
-
-    // TODO delete
-    private ArrayList<Workout> createWorkoutList(){
-        ArrayList<Workout> wo = new ArrayList<Workout>();
-        wo.add(new Workout(Workout.WorkoutType.ARM_WORKOUT, null, new Date().getTime()));
-        wo.add(new Workout(Workout.WorkoutType.CHEST_WORKOUT, null, new Date().getTime()));
-        wo.add(new Workout(Workout.WorkoutType.SHOULDER_WORKOUT, null, new Date().getTime()));
-        wo.add(new Workout(Workout.WorkoutType.LEG_WORKOUT, null, new Date().getTime()));
-        return wo;
     }
 }

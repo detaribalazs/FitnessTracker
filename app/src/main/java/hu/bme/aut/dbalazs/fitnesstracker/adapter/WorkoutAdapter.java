@@ -108,14 +108,6 @@ public class WorkoutAdapter extends RecyclerView.Adapter<WorkoutAdapter.WorkoutV
         });
     }
 
-    public void addWorkout(Workout wo){
-        workoutList.add(wo);
-    }
-
-    public void removeWorkout(int position){
-        workoutList.remove(position);
-    }
-
     @Override
     public int getItemCount() {
         return workoutList.size();
