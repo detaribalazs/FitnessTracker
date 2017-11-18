@@ -101,15 +101,15 @@ public class ExerciseListFragment extends Fragment {
 
     private ArrayList<Exercise> createExerciseList(){
         ArrayList<Series> s1 = new ArrayList<Series>();
-        s1.add(new Series(50, 8));
-        s1.add(new Series(50, 8));
-        s1.add(new Series(50, 8));
-        s1.add(new Series(50, 8));
+        s1.add(new Series(50, 8, 1));
+        s1.add(new Series(50, 8, 2));
+        s1.add(new Series(50, 8, 3));
+        s1.add(new Series(50, 8, 4));
 
         ArrayList<Series> s2 = new ArrayList<Series>();
-        s2.add(new Series(70, 6));
-        s2.add(new Series(50, 7));
-        s2.add(new Series(50, 8));
+        s2.add(new Series(70, 6, 5));
+        s2.add(new Series(50, 7, 6));
+        s2.add(new Series(50, 8, 7));
 
         ArrayList<Exercise> exList = new ArrayList<Exercise>();
         exList.add(new Exercise(s1, "Fekvenyomás"));

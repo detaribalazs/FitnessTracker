@@ -29,28 +29,45 @@ public class WorkoutListActivity extends AppCompatActivity implements WorkoutCre
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_workout_list);
+        setContentView(R.layout.workout_list_activity);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.workoutFab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                WorkoutCreateFragment fragment = new WorkoutCreateFragment();
-                FragmentManager fm = getSupportFragmentManager();
-                fm.beginTransaction().add(fragment, WorkoutCreateFragment.TAG)
-                        .addToBackStack(null)
-                        .show(fragment)
-                        .commit();
-            }
-        });
-
+        if (findViewById(R.id.exercise_list_fragment) != null) {
+            mTwoPane = true;
+        }
+        else{
+            mTwoPane = false;
+        }
+        if(!mTwoPane) {
+            FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.workoutFab);
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    WorkoutCreateFragment fragment = new WorkoutCreateFragment();
+                    FragmentManager fm = getSupportFragmentManager();
+                    fm.beginTransaction().add(fragment, WorkoutCreateFragment.TAG)
+                            .addToBackStack(null)
+                            .show(fragment)
+                            .commit();
+                }
+            });
+        }
+        else{
+            findViewById(R.id.workout_list_add_twoPane).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    WorkoutCreateFragment fragment = new WorkoutCreateFragment();
+                    FragmentManager fm = getSupportFragmentManager();
+                    fm.beginTransaction().add(fragment, WorkoutCreateFragment.TAG)
+                            .addToBackStack(null)
+                            .show(fragment)
+                            .commit();
+                }
+            });
+        }
         View recyclerView = findViewById(R.id.workout_list);
         assert recyclerView != null;
         woList = createWorkoutList();
 
-        if (findViewById(R.id.workout_detail_container) != null) {
-            mTwoPane = true;
-        }
         setupRecyclerView((RecyclerView) recyclerView, woList);
     }
 
@@ -74,15 +91,27 @@ public class WorkoutListActivity extends AppCompatActivity implements WorkoutCre
         woList.add(newWo);
         //adapter.addWorkout(newWo);
         adapter.notifyDataSetChanged();
-        Snackbar.make(findViewById(android.R.id.content).findViewById(R.id.workoutFab), "New Workout added", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show();
+        if(mTwoPane) {
+            Snackbar.make(findViewById(android.R.id.content), "New Workout added", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+        }
+        else {
+            Snackbar.make(findViewById(R.id.workoutFab), "New Workout added", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+        }
     }
 
     public void removeWorkout(int position){
         woList.remove(position);
         adapter.notifyDataSetChanged();
-        Snackbar.make(findViewById(android.R.id.content).findViewById(R.id.workoutFab), "Workout removed", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show();
+        if(mTwoPane) {
+            Snackbar.make(findViewById(android.R.id.content), "Workout removed", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+        }
+        else {
+            Snackbar.make(findViewById(R.id.workoutFab), "Workout removed", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+        }
     }
 
     @Override

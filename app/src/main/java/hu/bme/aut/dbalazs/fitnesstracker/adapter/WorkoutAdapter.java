@@ -64,7 +64,7 @@ public class WorkoutAdapter extends RecyclerView.Adapter<WorkoutAdapter.WorkoutV
         String date = sdf.format(workoutList.get(position).getWoDate());
         holder.woDateTv.setText(date);
         String workoutType = Workout.typeToString(workoutList.get(position).getWoType());
-        holder.woTypeTV.setText(workoutType);
+        holder.woTypeTV.setText(workoutType + " training");
         holder.woFrameRL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -75,7 +75,7 @@ public class WorkoutAdapter extends RecyclerView.Adapter<WorkoutAdapter.WorkoutV
                     ExerciseListFragment fragment = new ExerciseListFragment();
                     fragment.setArguments(arguments);
                     activity.getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.workout_detail_container, fragment)
+                            .replace(R.id.exercise_list_fragment, fragment)
                             .commit();
                 } else {
                     Context context = view.getContext();

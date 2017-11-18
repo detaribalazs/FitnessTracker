@@ -1,16 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/workout_list"
-    android:name="hu.bme.aut.dbalazs.fitnesstracker.WorkoutListFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginLeft="2dp"
-    android:layout_marginRight="2dp"
-    app:layoutManager="LinearLayoutManager"
-    tools:context="hu.bme.aut.dbalazs.fitnesstracker.WorkoutListActivity"
-    tools:listitem="@layout/workout_item" >
+    android:fitsSystemWindows="true"
+    tools:context="hu.bme.aut.dbalazs.fitnesstracker.WorkoutListActivity">
+    <android.support.v7.widget.RecyclerView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/workout_list"
+        android:name="hu.bme.aut.dbalazs.fitnesstracker.WorkoutListFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="2dp"
+        app:layoutManager="LinearLayoutManager"
+        tools:context="hu.bme.aut.dbalazs.fitnesstracker.WorkoutListActivity"
+        tools:listitem="@layout/workout_item" >
 
-</android.support.v7.widget.RecyclerView>
+    </android.support.v7.widget.RecyclerView>
+    <android.support.design.widget.FloatingActionButton
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/workoutFab"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        app:backgroundTint="#000000"
+        android:tint="#FFFFFF"
+        app:srcCompat="@android:drawable/ic_input_add" />
+</android.support.design.widget.CoordinatorLayout>

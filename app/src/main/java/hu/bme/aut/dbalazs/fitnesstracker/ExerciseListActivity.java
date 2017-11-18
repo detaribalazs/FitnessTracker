@@ -22,7 +22,7 @@ public class ExerciseListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_exercise_list);
+        setContentView(R.layout.exercise_list_activity);
         Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         //setSupportActionBar(toolbar);
 
@@ -52,7 +52,7 @@ public class ExerciseListActivity extends AppCompatActivity {
             ExerciseListFragment fragment = new ExerciseListFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.workout_detail_container, fragment)
+                    .add(R.id.exercise_list_fragment, fragment)
                     .commit();
         }
     }

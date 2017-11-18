@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -19,17 +18,18 @@ import hu.bme.aut.dbalazs.fitnesstracker.model.Series;
  * Created by Balazs on 2017. 11. 11..
  */
 
-public class SeriesAdapter {
-    private ArrayList<Series> exerciseList;
+public class SeriesAdapter extends RecyclerView.Adapter<SeriesAdapter.SeriesViewHolder> {
     private AppCompatActivity activity;
+    private ArrayList<Series> seriesList;
+    private int exerciseId;
 
-    public class ExerciseViewHolder extends RecyclerView.ViewHolder{
+    public class SeriesViewHolder extends RecyclerView.ViewHolder{
         public TextView exerciseTypeTV;
         public TextView exerciseRepsTV;
         public RelativeLayout exerciseFrameRL;
         public Exercise woItem;
 
-        public ExerciseViewHolder(View itemView) {
+        public SeriesViewHolder(View itemView) {
             super(itemView);
             exerciseTypeTV = itemView.findViewById(R.id.exerciseTypeTV);
             exerciseRepsTV = itemView.findViewById(R.id.exerciseRepsTV);
@@ -37,17 +37,22 @@ public class SeriesAdapter {
         }
     }
 
-    public SeriesAdapter(ArrayList<Exercise> exList, AppCompatActivity activity){
-        this.exerciseList = exList;
+    public SeriesAdapter(ArrayList<Series> series, AppCompatActivity activity){
         this.activity = activity;
+        this.seriesList = series;
     }
 
     @Override
-    public ExerciseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public SeriesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.exercise_item, parent, false);
-        return new ExerciseViewHolder(v);
+        return new SeriesViewHolder(v);
     }
 
+    @Override
+    public void onBindViewHolder(SeriesViewHolder holder, int position) {
+    }
+
+    /*
     @Override
     public void onBindViewHolder(ExerciseViewHolder holder, int position) {
         String reps = "" + exerciseList.get(position).getReps();
@@ -61,11 +66,10 @@ public class SeriesAdapter {
             }
         });
     }
-
+*/
     @Override
     public int getItemCount() {
-        return exerciseList.size();
+        return seriesList.size();
     }
 
-}
 }

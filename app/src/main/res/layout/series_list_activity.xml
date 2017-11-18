@@ -16,7 +16,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/exerciseListRV"
-        tools:listitem="@layout/exercise_detail_item">
+        tools:listitem="@layout/series_item">
     </android.support.v7.widget.RecyclerView>
 
 </LinearLayout>
+
