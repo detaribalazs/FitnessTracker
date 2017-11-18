@@ -20,27 +20,21 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import hu.bme.aut.dbalazs.fitnesstracker.adapter.ExerciseAdapter;
-import hu.bme.aut.dbalazs.fitnesstracker.dummy.DummyContent;
 import hu.bme.aut.dbalazs.fitnesstracker.model.Exercise;
 import hu.bme.aut.dbalazs.fitnesstracker.model.Series;
 import hu.bme.aut.dbalazs.fitnesstracker.model.Workout;
 
-/**
- * A fragment representing a single Workout detail screen.
- * This fragment is either contained in a {@link WorkoutListActivity}
- * in two-pane mode (on tablets) or a {@link ExerciseListActivity}
- * on handsets.
- */
 public class ExerciseListFragment extends Fragment {
 
     public static final String EXERCISE_ID = "exercise_id";
     public static final String EXERCISE_TYPE = "exercise_type";
     public static final String EXERCISE_DATE = "exercise_date";
+    public static final String TWO_PANE_TAG = "two_pane";
     // TODO create database query according to this id from exercise table
 
-    private DummyContent.DummyItem mItem;
     private ArrayList<Exercise> exerciseList; //TODO init this with query
     private ExerciseAdapter adapter;
+    private boolean twoPane = false;
 
     public ExerciseListFragment() {
     }
@@ -48,7 +42,7 @@ public class ExerciseListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        adapter = new ExerciseAdapter(createExerciseList(), (AppCompatActivity)getActivity());
+        adapter = new ExerciseAdapter(createExerciseList(), (AppCompatActivity)getActivity(), twoPane);
 
         if (getArguments().containsKey(EXERCISE_TYPE) && getArguments().containsKey(EXERCISE_DATE)) {
             // Load the dummy content specified by the fragment
@@ -63,6 +57,10 @@ public class ExerciseListFragment extends Fragment {
                 title += ", " + sdf.format(date);
                 appBarLayout.setTitle(title);//mItem.content
             }
+        }
+        /* activity sent two pane flag */
+        if(getArguments().containsKey(TWO_PANE_TAG)){
+            this.twoPane = getArguments().getBoolean(TWO_PANE_TAG);
         }
     }
 

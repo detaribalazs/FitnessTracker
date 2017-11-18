@@ -19,6 +19,8 @@ import android.view.View;
  */
 public class ExerciseListActivity extends AppCompatActivity {
 
+    public static final int EXERCISE_LIST_ACTVITY_REQUEST_CODE = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

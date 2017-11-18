@@ -72,6 +72,7 @@ public class WorkoutAdapter extends RecyclerView.Adapter<WorkoutAdapter.WorkoutV
                     Bundle arguments = new Bundle();
                     arguments.putString(ExerciseListFragment.EXERCISE_TYPE, holder.woItem.getWoType().name());
                     arguments.putLong(ExerciseListFragment.EXERCISE_DATE, holder.woItem.getWoDate().getTime());
+                    arguments.putBoolean(ExerciseListFragment.TWO_PANE_TAG, mTwoPane);
                     ExerciseListFragment fragment = new ExerciseListFragment();
                     fragment.setArguments(arguments);
                     activity.getSupportFragmentManager().beginTransaction()

@@ -26,6 +26,16 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="hu.bme.aut.dbalazs.fitnesstracker.WorkoutListActivity" />
         </activity>
+        <activity
+            android:name=".SeriesListActivity"
+            android:theme="@style/DarkDefault"
+            android:label="Series"
+            android:parentActivityName=".ExerciseListActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="hu.bme.aut.dbalazs.fitnesstracker.ExerciseListActivity" />
+        </activity>
+
     </application>
 
 </manifest>
