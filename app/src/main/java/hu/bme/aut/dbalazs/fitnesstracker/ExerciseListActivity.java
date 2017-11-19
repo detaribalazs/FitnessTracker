@@ -87,4 +87,8 @@ public class ExerciseListActivity extends AppCompatActivity implements ExerciseC
         Snackbar.make(findViewById(android.R.id.content), "New exercise added!", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
     }
+
+    public void removeExercise(int position){
+        fragment.removeExerciseList(position);
+    }
 }

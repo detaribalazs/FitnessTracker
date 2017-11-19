@@ -2,8 +2,10 @@ package hu.bme.aut.dbalazs.fitnesstracker.adapter;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
@@ -12,9 +14,11 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import hu.bme.aut.dbalazs.fitnesstracker.ExerciseListActivity;
 import hu.bme.aut.dbalazs.fitnesstracker.R;
 import hu.bme.aut.dbalazs.fitnesstracker.SeriesListActivity;
 import hu.bme.aut.dbalazs.fitnesstracker.SeriesListFragment;
+import hu.bme.aut.dbalazs.fitnesstracker.WorkoutListActivity;
 import hu.bme.aut.dbalazs.fitnesstracker.model.Exercise;
 
 public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ExerciseViewHolder> {
@@ -71,6 +75,24 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
                     */
                     Toast.makeText(activity, "Two pane activity still not ready", Toast.LENGTH_SHORT).show();
                 }
+            }
+        });
+        holder.exerciseFrameRL.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                PopupMenu popup = new PopupMenu(view.getContext(), view);
+                popup.inflate(R.menu.workout_menu);
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        if (R.id.workoutDeleteDel == item.getItemId()) {
+                            ((ExerciseListActivity)activity).removeExercise(position);
+                        }
+                        return false;
+                    }
+                });
+                popup.show();
+                return false;
             }
         });
     }
