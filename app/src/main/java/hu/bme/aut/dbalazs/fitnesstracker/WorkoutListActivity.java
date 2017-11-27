@@ -1,8 +1,8 @@
 package hu.bme.aut.dbalazs.fitnesstracker;
 
 import android.app.DatePickerDialog;
+import android.database.Cursor;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
@@ -13,18 +13,22 @@ import android.widget.DatePicker;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
 import hu.bme.aut.dbalazs.fitnesstracker.adapter.WorkoutAdapter;
+import hu.bme.aut.dbalazs.fitnesstracker.application.FitnessApplication;
+import hu.bme.aut.dbalazs.fitnesstracker.database.FitnessDatabaseInterface;
+import hu.bme.aut.dbalazs.fitnesstracker.database.LoadWorkoutsTask;
 import hu.bme.aut.dbalazs.fitnesstracker.model.Workout;
 
 public class WorkoutListActivity extends AppCompatActivity implements WorkoutCreateFragment.CreateWorkoutListener, DatePickerDialog.OnDateSetListener {
 
     private boolean mTwoPane;
-    private ArrayList<Workout> woList;
     private WorkoutAdapter adapter;
+    private RecyclerView recyclerView;
+    private LoadWorkoutsTask loadWorkoutsTask;
+    private FitnessDatabaseInterface databaseIf;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,33 +68,22 @@ public class WorkoutListActivity extends AppCompatActivity implements WorkoutCre
                 }
             });
         }
-        View recyclerView = findViewById(R.id.workout_list);
+
+        recyclerView = (RecyclerView) findViewById(R.id.workout_list);
         assert recyclerView != null;
-        woList = createWorkoutList();
 
-        setupRecyclerView((RecyclerView) recyclerView, woList);
+        databaseIf = FitnessApplication.getDatabaseInterface();
     }
 
-    // TODO delete
-    private ArrayList<Workout> createWorkoutList(){
-        ArrayList<Workout> wo = new ArrayList<Workout>();
-        wo.add(new Workout(Workout.WorkoutType.ARM_WORKOUT, null, new Date().getTime()));
-        wo.add(new Workout(Workout.WorkoutType.CHEST_WORKOUT, null, new Date().getTime()));
-        wo.add(new Workout(Workout.WorkoutType.SHOULDER_WORKOUT, null, new Date().getTime()));
-        wo.add(new Workout(Workout.WorkoutType.LEG_WORKOUT, null, new Date().getTime()));
-        return wo;
-    }
-
-    private void setupRecyclerView(@NonNull RecyclerView recyclerView, ArrayList<Workout> woList) {
-        adapter = new WorkoutAdapter(woList, mTwoPane, this);
+    public void showWorkouts(Cursor cursor){
+        adapter = new WorkoutAdapter(this, cursor, mTwoPane);
         recyclerView.setAdapter(adapter);
     }
 
     @Override
     public void onWorkoutCreated(Workout newWo) {
-        woList.add(newWo);
-        //adapter.addWorkout(newWo);
-        adapter.notifyDataSetChanged();
+        databaseIf.insertWorkout(newWo);
+        refreshList();
         if(mTwoPane) {
             Snackbar.make(findViewById(android.R.id.content), "New Workout added", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
@@ -101,9 +94,9 @@ public class WorkoutListActivity extends AppCompatActivity implements WorkoutCre
         }
     }
 
-    public void removeWorkout(int position){
-        woList.remove(position);
-        adapter.notifyDataSetChanged();
+    public void removeWorkout(long woId){
+        databaseIf.removeWorkout(woId);
+        refreshList();
         if(mTwoPane) {
             Snackbar.make(findViewById(android.R.id.content), "Workout removed", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
@@ -124,5 +117,39 @@ public class WorkoutListActivity extends AppCompatActivity implements WorkoutCre
         currentFragment.setDate(date);
         SimpleDateFormat sdf = new SimpleDateFormat("MMM d. EEE");
         dateTV.setText(sdf.format(date));
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        // Frissitjuk a lista tartalmat, ha visszater a user
+        refreshList();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        if (loadWorkoutsTask != null) {
+            loadWorkoutsTask.cancel(false);
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        // Ha van Cursor rendelve az Adapterhez, lezarjuk
+        if (adapter != null && adapter.getCursor() != null) {
+            adapter.getCursor().close();
+        }
+        super.onDestroy();
+    }
+
+    private void refreshList() {
+        if (loadWorkoutsTask != null) {
+            loadWorkoutsTask.cancel(false);
+        }
+
+        loadWorkoutsTask = new LoadWorkoutsTask(this, databaseIf);
+        loadWorkoutsTask.execute();
     }
 }

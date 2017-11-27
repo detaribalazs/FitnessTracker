@@ -53,6 +53,7 @@ public class ExerciseListActivity extends AppCompatActivity implements ExerciseC
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
+            /* Put exercise type and exercise date into the Bundle */
             arguments.putString(ExerciseListFragment.EXERCISE_TYPE,
                     getIntent().getStringExtra(ExerciseListFragment.EXERCISE_TYPE));
             arguments.putLong(ExerciseListFragment.EXERCISE_DATE,

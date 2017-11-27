@@ -11,7 +11,7 @@ public class Workout {
     private WorkoutType woType;
     private Date woDate;
     private ArrayList<Exercise> exerciseList;
-    private int id; // TODO set this with its ID in database
+    private long id; // TODO set this with its ID in database
 
     public Workout(WorkoutType woType, ArrayList<Exercise> exerciseList, long milis) {
         this.woType = woType;
@@ -29,6 +29,12 @@ public class Workout {
             this.woDate = date;
         }
 
+    }
+
+    public Workout(WorkoutType woType, long milis, long id){
+        this.woType = woType;
+        woDate = new Date(milis);
+        this.id = id;
     }
 
     public WorkoutType getWoType() {
@@ -55,12 +61,29 @@ public class Workout {
         this.exerciseList = exerciseList;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getTypeString(){
+        switch (woType){
+            case ARM_WORKOUT:
+                return "ARM_WORKOUT";
+            case BACK_WORKOUT:
+                return "BACK_WORKOUT";
+            case CHEST_WORKOUT:
+                return "CHEST_WORKOUT";
+            case SHOULDER_WORKOUT:
+                return "SHOULDER_WORKOUT";
+            case LEG_WORKOUT:
+                return  "LEG_WORKOUT";
+            default:
+                return "ARM_WORKOUT";
+        }
     }
 
     public static String typeToString(WorkoutType type)
