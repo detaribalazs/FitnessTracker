@@ -24,7 +24,6 @@ import hu.bme.aut.dbalazs.fitnesstracker.database.FitnessDatabaseInterface;
 import hu.bme.aut.dbalazs.fitnesstracker.model.Workout;
 
 public class WorkoutAdapter extends CursorRecyclerViewAdapter<WorkoutAdapter.WorkoutViewHolder> {
-    public static String WORKOUT_ID_TAG = "workout_id_tag";
 
     private boolean mTwoPane;
     private Context context;
@@ -58,7 +57,7 @@ public class WorkoutAdapter extends CursorRecyclerViewAdapter<WorkoutAdapter.Wor
 
     @Override
     public void onBindViewHolder(final WorkoutViewHolder holder, Cursor cursor) {
-        Workout currentWorkout = FitnessDatabaseInterface.getTodoByCursor(cursor);
+        Workout currentWorkout = FitnessDatabaseInterface.createWorkoutFromCursor(cursor);
         holder.woItem = currentWorkout;
         SimpleDateFormat sdf = new SimpleDateFormat("MMM d, EEE");
         String date = sdf.format(currentWorkout.getWoDate());
@@ -70,10 +69,9 @@ public class WorkoutAdapter extends CursorRecyclerViewAdapter<WorkoutAdapter.Wor
             public void onClick(View view) {
                 if (mTwoPane) {
                     Bundle arguments = new Bundle();
-                    arguments.putString(ExerciseListFragment.EXERCISE_TYPE, holder.woItem.getWoType().name());
-                    arguments.putLong(ExerciseListFragment.EXERCISE_DATE, holder.woItem.getWoDate().getTime());
-                    // set the workout ID too
-                    arguments.putLong(WORKOUT_ID_TAG, holder.woItem.getId());
+                    arguments.putString(ExerciseListFragment.WORKOUT_TYPE, holder.woItem.getWoType().name());
+                    arguments.putLong(ExerciseListFragment.WORKOUT_DATE, holder.woItem.getWoDate().getTime());
+                    arguments.putLong(ExerciseListFragment.WORKOUT_ID, holder.woItem.getId());
                     arguments.putBoolean(ExerciseListFragment.TWO_PANE_TAG, mTwoPane);
                     ExerciseListFragment fragment = new ExerciseListFragment();
                     fragment.setArguments(arguments);
@@ -81,12 +79,11 @@ public class WorkoutAdapter extends CursorRecyclerViewAdapter<WorkoutAdapter.Wor
                             .replace(R.id.exercise_list_fragment, fragment)
                             .commit();
                 } else {
-                    // set the workout ID too
                     Context context = view.getContext();
                     Intent intent = new Intent(context, ExerciseListActivity.class);
-                    intent.putExtra(ExerciseListFragment.EXERCISE_TYPE, holder.woItem.getWoType().name());
-                    intent.putExtra(ExerciseListFragment.EXERCISE_DATE, holder.woItem.getWoDate().getTime());
-                    intent.putExtra(WORKOUT_ID_TAG, holder.woItem.getId());
+                    intent.putExtra(ExerciseListActivity.WORKOUT_TYPE, holder.woItem.getWoType().name());
+                    intent.putExtra(ExerciseListActivity.WORKOUT_DATE, holder.woItem.getWoDate().getTime());
+                    intent.putExtra(ExerciseListActivity.WORKOUT_ID, holder.woItem.getId());
                     context.startActivity(intent);
                 }
             }

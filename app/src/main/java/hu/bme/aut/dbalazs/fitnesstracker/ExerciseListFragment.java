@@ -1,7 +1,7 @@
 package hu.bme.aut.dbalazs.fitnesstracker;
 
-import android.app.Activity;
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.DimenRes;
@@ -11,30 +11,38 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 
 import hu.bme.aut.dbalazs.fitnesstracker.adapter.ExerciseAdapter;
+import hu.bme.aut.dbalazs.fitnesstracker.application.FitnessApplication;
+import hu.bme.aut.dbalazs.fitnesstracker.database.FitnessDatabaseInterface;
+import hu.bme.aut.dbalazs.fitnesstracker.database.LoadExercisesTask;
 import hu.bme.aut.dbalazs.fitnesstracker.model.Exercise;
-import hu.bme.aut.dbalazs.fitnesstracker.model.Series;
 import hu.bme.aut.dbalazs.fitnesstracker.model.Workout;
 
+/** This fragment shows the recycler view filled with data from local database. This class is responsible
+ *  for managing database operations and showing data. */
 public class ExerciseListFragment extends Fragment {
 
-    public static final String EXERCISE_ID = "exercise_id";
-    public static final String EXERCISE_TYPE = "exercise_type";
-    public static final String EXERCISE_DATE = "exercise_date";
+    private static final String TAG = "ExerciseListFragment";
+    public static final String WORKOUT_ID = "exercise_id";
+    public static final String WORKOUT_TYPE = "exercise_type";
+    public static final String WORKOUT_DATE = "exercise_date";
     public static final String TWO_PANE_TAG = "two_pane";
-    // TODO create database query according to this id from exercise table
 
-    private ArrayList<Exercise> exerciseList; //TODO init this with query
     private ExerciseAdapter adapter;
     private boolean twoPane = false;
+    private AppCompatActivity activity;
+    private FitnessDatabaseInterface databaseIf = FitnessApplication.getDatabaseInterface();
+    private RecyclerView exListRV;
+    private LoadExercisesTask loadExercisesTask;
+    private long workoutId;
 
     public ExerciseListFragment() {
     }
@@ -42,18 +50,21 @@ public class ExerciseListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        exerciseList = createExerciseList();
-        adapter = new ExerciseAdapter(exerciseList, (AppCompatActivity)getActivity(), twoPane);
 
-        if (getArguments().containsKey(EXERCISE_TYPE) && getArguments().containsKey(EXERCISE_DATE)) {
-            // Load the dummy content specified by the fragment
-            // arguments. In a real-world scenario, use a Loader
-            // to load content from a content provider.
-            Activity activity = this.getActivity();
+        if(!getArguments().containsKey(WORKOUT_ID)){
+            Log.d(TAG, "Workout id not received");
+        }
+        workoutId = getArguments().getLong(WORKOUT_ID);
+        if(workoutId == -1){
+            Log.d(TAG, "Workout id not received");
+        }
+        // set workout type and workout date in the toolbar
+        if (getArguments().containsKey(WORKOUT_TYPE) && getArguments().containsKey(WORKOUT_DATE)) {
+            activity = (AppCompatActivity) this.getActivity();
             CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
             if (appBarLayout != null) {
-                String title = Workout.typeToString(Workout.WorkoutType.valueOf(getArguments().getString(EXERCISE_TYPE)));
-                Date date = new Date(getArguments().getLong(EXERCISE_DATE));
+                String title = Workout.typeToString(Workout.WorkoutType.valueOf(getArguments().getString(WORKOUT_TYPE)));
+                Date date = new Date(getArguments().getLong(WORKOUT_DATE));
                 SimpleDateFormat sdf = new SimpleDateFormat("MMM d. EEE");
                 title += ", " + sdf.format(date);
                 appBarLayout.setTitle(title);//mItem.content
@@ -69,15 +80,13 @@ public class ExerciseListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.exercise_list, container, false);            //workout_detail
-        RecyclerView exListRV = (RecyclerView) rootView;
+        exListRV = (RecyclerView) rootView;
         //exListRV.setLayoutManager(new GridLayoutManager(getActivity(), 2));
-        exListRV.setLayoutManager(new GridLayoutManager(getActivity(), 2));
-        ItemOffsetDecoration itemDecoration = new ItemOffsetDecoration(getContext(), R.dimen.item_offset);
-        exListRV.addItemDecoration(itemDecoration);
-        exListRV.setAdapter(adapter);
+        refreshList();
         return rootView;
     }
 
+    /** Sets the offset between cards on UI */
     private class ItemOffsetDecoration extends RecyclerView.ItemDecoration {
 
         private int mItemOffset;
@@ -98,35 +107,40 @@ public class ExerciseListFragment extends Fragment {
         }
     }
 
-    public void addExercise(Exercise newExercise){
-        exerciseList.add(newExercise);
-        adapter.notifyDataSetChanged();
+    /** Adds new exercise received as parameter from CreateExerciseFragment through activity */
+    public void addExercise(Exercise exercise){
+        databaseIf.insertExercise(exercise, workoutId);
+        refreshList();
     }
 
-    public void removeExerciseList(int position){
-        exerciseList.remove(position);
-        adapter.notifyDataSetChanged();
+    /** Removes exercise with given ID from database */
+    public void removeExercise(long exId){
+        databaseIf.removeExercise(exId);
+        refreshList();
     }
 
-    //TODO delete
-    private ArrayList<Exercise> createExerciseList(){
-        ArrayList<Series> s1 = new ArrayList<Series>();
-        s1.add(new Series(50, 8, 1));
-        s1.add(new Series(50, 8, 2));
-        s1.add(new Series(50, 8, 3));
-        s1.add(new Series(50, 8, 4));
-
-        ArrayList<Series> s2 = new ArrayList<Series>();
-        s2.add(new Series(70, 6, 5));
-        s2.add(new Series(50, 7, 6));
-        s2.add(new Series(50, 8, 7));
-
-        ArrayList<Exercise> exList = new ArrayList<Exercise>();
-        exList.add(new Exercise(s1, "Fekvenyomás"));
-        exList.add(new Exercise(s2, "Felülés"));
-        exList.add(new Exercise(s1, "Tárogatás"));
-        exList.add(new Exercise(s2, "Gugolás"));
-
-        return exList;
+    /** Creates and sets a new adapter to recycler view. Called by LoadExercisesTask on post execute with new data. */
+    public void showExercises(Cursor cursor){
+        adapter = new ExerciseAdapter(cursor, activity, this, twoPane);
+        if(!twoPane) {
+            exListRV.setLayoutManager(new GridLayoutManager(getActivity(), 2));
+        } else{
+            exListRV.setLayoutManager(new GridLayoutManager(getActivity(), 4));
+        }
+        ItemOffsetDecoration itemDecoration = new ItemOffsetDecoration(getContext(), R.dimen.item_offset);
+        exListRV.addItemDecoration(itemDecoration);
+        exListRV.setAdapter(adapter);
     }
+
+    /** Fetches data from database */
+    private void refreshList(){
+        if (loadExercisesTask != null) {
+            loadExercisesTask.cancel(false);
+        }
+
+        loadExercisesTask = new LoadExercisesTask(this, databaseIf, workoutId);
+        loadExercisesTask.execute();
+    }
+
+
 }

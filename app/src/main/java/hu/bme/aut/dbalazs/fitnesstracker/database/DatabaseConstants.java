@@ -16,11 +16,12 @@ public class DatabaseConstants {
         public static final String REPS = "reps";
         public static final String WEIGHT = "weight";
 
-        public static final String CREATE_TABLE =  "create table if not exists "+ TABLE_NAME+" ( "
+        public static final String CREATE_TABLE =  "create table if not exists "+ TABLE_NAME + " ( "
                 + ID +" integer primary key autoincrement, "
                 + REPS + " integer, "
                 + WEIGHT + " integer, "
-                +"foreign key(" + EXERCISE_ID + ") references "+  Exercise.TABLE_NAME + "(" + Exercise.ID + ") "
+                + EXERCISE_ID + " integer, "
+                +"foreign key(" + EXERCISE_ID + ") REFERENCES "+  Exercise.TABLE_NAME + "(" + Exercise.ID + ") "
                 + "); ";
 
         public static final String DROP_TABLE = "drop table if exists " + TABLE_NAME + "; ";
@@ -35,6 +36,7 @@ public class DatabaseConstants {
         public static final String CREATE_TABLE = "create table if not exists "+ TABLE_NAME+" ( "
                 + ID +" integer primary key autoincrement, "
                 + NAME + " text, "
+                + WORKOUT_ID + " integer, "
                 +"foreign key(" + WORKOUT_ID + ") references "+  Workout.TABLE_NAME + "(" + Workout.ID + ") "
                 + "); ";
 

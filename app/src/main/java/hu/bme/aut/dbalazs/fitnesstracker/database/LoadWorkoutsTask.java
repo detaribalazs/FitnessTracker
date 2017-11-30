@@ -24,7 +24,6 @@ public class LoadWorkoutsTask extends AsyncTask<Void, Void, Cursor> {
     @Override
     protected Cursor doInBackground(Void... voids) {
         try{
-
             Cursor result = dbInterface.fetchAllWorkouts();
 
             if(!isCancelled()){
@@ -40,6 +39,8 @@ public class LoadWorkoutsTask extends AsyncTask<Void, Void, Cursor> {
             }
         }
         catch (Exception e) {
+            Log.d(TAG, "Exception: " + e.toString());
+            e.printStackTrace();
             return null;
         }
     }

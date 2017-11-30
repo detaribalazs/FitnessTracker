@@ -13,12 +13,19 @@ public class FitnessDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        sqLiteDatabase.execSQL(DatabaseConstants.CREATE_ALL);
+        sqLiteDatabase.execSQL(DatabaseConstants.Workout.CREATE_TABLE);
+        sqLiteDatabase.execSQL(DatabaseConstants.Exercise.CREATE_TABLE);
+        sqLiteDatabase.execSQL(DatabaseConstants.Series.CREATE_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-        sqLiteDatabase.execSQL(DatabaseConstants.DROP_ALL);
-        sqLiteDatabase.execSQL(DatabaseConstants.CREATE_ALL);
+        sqLiteDatabase.execSQL(DatabaseConstants.Series.DROP_TABLE);
+        sqLiteDatabase.execSQL(DatabaseConstants.Exercise.DROP_TABLE);
+        sqLiteDatabase.execSQL(DatabaseConstants.Workout.DROP_TABLE);
+
+        sqLiteDatabase.execSQL(DatabaseConstants.Workout.CREATE_TABLE);
+        sqLiteDatabase.execSQL(DatabaseConstants.Exercise.CREATE_TABLE);
+        sqLiteDatabase.execSQL(DatabaseConstants.Series.CREATE_TABLE);
     }
 }

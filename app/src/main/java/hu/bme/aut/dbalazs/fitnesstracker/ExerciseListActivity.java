@@ -12,6 +12,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 
+import hu.bme.aut.dbalazs.fitnesstracker.application.FitnessApplication;
+import hu.bme.aut.dbalazs.fitnesstracker.database.FitnessDatabaseInterface;
 import hu.bme.aut.dbalazs.fitnesstracker.model.Exercise;
 
 /**
@@ -22,7 +24,14 @@ import hu.bme.aut.dbalazs.fitnesstracker.model.Exercise;
  */
 public class ExerciseListActivity extends AppCompatActivity implements ExerciseCreateFragment.CreateExerciseListener {
 
+    private static final String TAG = "ExerciseListActivity";
+    public static final String WORKOUT_ID = "exercise_id";
+    public static final String WORKOUT_TYPE = "exercise_type";
+    public static final String WORKOUT_DATE = "exercise_date";
+    public static final String TWO_PANE_TAG = "two_pane";
+
     private ExerciseListFragment fragment;
+    private FitnessDatabaseInterface databaseIf;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +39,7 @@ public class ExerciseListActivity extends AppCompatActivity implements ExerciseC
         this.fragment = new ExerciseListFragment();
         setContentView(R.layout.exercise_list_activity);
         Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
-        //setSupportActionBar(toolbar);
+        databaseIf = FitnessApplication.getDatabaseInterface();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.exercise_fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -54,10 +63,12 @@ public class ExerciseListActivity extends AppCompatActivity implements ExerciseC
             // using a fragment transaction.
             Bundle arguments = new Bundle();
             /* Put exercise type and exercise date into the Bundle */
-            arguments.putString(ExerciseListFragment.EXERCISE_TYPE,
-                    getIntent().getStringExtra(ExerciseListFragment.EXERCISE_TYPE));
-            arguments.putLong(ExerciseListFragment.EXERCISE_DATE,
-                    getIntent().getLongExtra(ExerciseListFragment.EXERCISE_DATE, 0));
+            arguments.putString(ExerciseListFragment.WORKOUT_TYPE,
+                    getIntent().getStringExtra(ExerciseListActivity.WORKOUT_TYPE));
+            arguments.putLong(ExerciseListFragment.WORKOUT_DATE,
+                    getIntent().getLongExtra(ExerciseListActivity.WORKOUT_DATE, 0));
+            arguments.putLong(ExerciseListActivity.WORKOUT_ID,
+                    getIntent().getLongExtra(ExerciseListActivity.WORKOUT_ID, -1));
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.exercise_list_fragment, fragment)
@@ -88,8 +99,9 @@ public class ExerciseListActivity extends AppCompatActivity implements ExerciseC
         Snackbar.make(findViewById(android.R.id.content), "New exercise added!", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
     }
-
-    public void removeExercise(int position){
-        fragment.removeExerciseList(position);
+    /*
+    public void removeExercise(long exId){
+        databaseIf.removeExercise(exId);
     }
+    */
 }
