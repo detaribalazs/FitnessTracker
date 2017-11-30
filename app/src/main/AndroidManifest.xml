@@ -22,7 +22,8 @@
             android:name=".ExerciseListActivity"
             android:label="@string/title_workout_detail"
             android:parentActivityName=".WorkoutListActivity"
-            android:theme="@style/DarkDefault">
+            android:theme="@style/DarkDefault"
+            android:launchMode="singleTop">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="hu.bme.aut.dbalazs.fitnesstracker.WorkoutListActivity" />
