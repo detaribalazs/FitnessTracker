@@ -7,12 +7,13 @@ package hu.bme.aut.dbalazs.fitnesstracker.model;
 public class Series {
     private int weight;
     private int reps;
+    private long id;
     private long exerciseId;
 
     public Series(int weight, int reps, long id) {
         this.weight = weight;
         this.reps = reps;
-        this.exerciseId = id;
+        this.id = id;
     }
 
     public Series(int weight, int reps) {
@@ -36,8 +37,12 @@ public class Series {
         this.reps = reps;
     }
 
-    public void setExerciseId(long exerciseId) {
-        this.exerciseId = exerciseId;
+    public void setId(long exerciseId) {
+        this.id = exerciseId;
+    }
+
+    public long getId() {
+        return id;
     }
 
     public long getExerciseId() {

@@ -141,6 +141,4 @@ public class ExerciseListFragment extends Fragment {
         loadExercisesTask = new LoadExercisesTask(this, databaseIf, workoutId);
         loadExercisesTask.execute();
     }
-
-
 }

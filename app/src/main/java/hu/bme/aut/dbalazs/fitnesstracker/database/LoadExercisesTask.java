@@ -50,7 +50,6 @@ public class LoadExercisesTask extends AsyncTask<Void, Void, Cursor> {
         super.onPostExecute(cursor);
         Log.d(TAG, "Fetch completed, displaying cursor results!");
         try {
-
             if (fragment != null) {
                 fragment.showExercises(cursor);
             }

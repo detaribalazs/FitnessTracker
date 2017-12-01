@@ -69,6 +69,7 @@ public class ExerciseAdapter extends CursorRecyclerViewAdapter<ExerciseAdapter.E
                 if(!twoPane) {
                     Intent intent = new Intent(activity, SeriesListActivity.class);
                     intent.putExtra(SeriesListFragment.SERIES_EXERCISE_NAME_TAG, currentExercise.getName());
+                    intent.putExtra(SeriesListFragment.EXERCISE_ID, currentExercise.getId());
                     activity.startActivity(intent);//, ExerciseListActivity.EXERCISE_LIST_ACTVITY_REQUEST_CODE);
                 }
                 else {

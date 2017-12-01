@@ -6,6 +6,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -48,6 +49,7 @@ public class SeriesListActivity extends AppCompatActivity {
             arguments.putString(SeriesListFragment.SERIES_EXERCISE_NAME_TAG,
                     getIntent().getStringExtra(SeriesListFragment.SERIES_EXERCISE_NAME_TAG));
             arguments.putBoolean(SeriesListFragment.SERIES_TWO_PANE_TAG, false);
+            arguments.putLong(SeriesListFragment.EXERCISE_ID, getIntent().getLongExtra(SeriesListFragment.EXERCISE_ID, -1));
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.series_list_fragment, fragment)
@@ -56,9 +58,17 @@ public class SeriesListActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.series_list_activity, menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
+            //TODO save here
             finish();
             return true;
         }

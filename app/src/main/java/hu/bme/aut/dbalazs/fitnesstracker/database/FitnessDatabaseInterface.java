@@ -38,11 +38,11 @@ public class FitnessDatabaseInterface {
     }
 
     /** inserts a new serie */
-    public long insertNewSeries(Series newSeries){
+    public long insertNewSeries(Series newSeries, long exId){
         ContentValues contentValues = new ContentValues();
         contentValues.put(DatabaseConstants.Series.WEIGHT, newSeries.getWeight());
         contentValues.put(DatabaseConstants.Series.REPS, newSeries.getReps());
-        contentValues.put(DatabaseConstants.Series.EXERCISE_ID, newSeries.getExerciseId());
+        contentValues.put(DatabaseConstants.Series.EXERCISE_ID, exId);
 
         return database.insert(DatabaseConstants.Series.TABLE_NAME, null, contentValues);
     }
@@ -59,6 +59,41 @@ public class FitnessDatabaseInterface {
         return database.delete(DatabaseConstants.Series.TABLE_NAME,
                                 DatabaseConstants.Series.EXERCISE_ID + " = " + exId,
                                 null) >= 0;
+    }
+
+    /** queries all series for given exercise */
+    public Cursor fetchAllSeries(long exerciseId){
+        return database.query(
+                DatabaseConstants.Series.TABLE_NAME,
+                new String[]{
+                        DatabaseConstants.Series.EXERCISE_ID,
+                        DatabaseConstants.Series.REPS,
+                        DatabaseConstants.Series.WEIGHT,
+                        DatabaseConstants.Series.ID
+                },
+                DatabaseConstants.Series.EXERCISE_ID + " = " + exerciseId,
+                null, null, null, null
+        );
+    }
+
+    /** creates a new series object from cursor data */
+    public static Series createSeriesFromCursor(Cursor c){
+        return new Series(
+                c.getInt(c.getColumnIndex(DatabaseConstants.Series.WEIGHT)),
+                c.getInt(c.getColumnIndex(DatabaseConstants.Series.REPS)),
+                c.getLong(c.getColumnIndex(DatabaseConstants.Series.ID)));
+    }
+
+    public boolean updateSeries(long rowId, Series serie){
+        ContentValues values = new ContentValues();
+        values.put(DatabaseConstants.Series.EXERCISE_ID, serie.getExerciseId());
+        values.put(DatabaseConstants.Series.WEIGHT, serie.getWeight());
+        values.put(DatabaseConstants.Series.REPS, serie.getReps());
+        return database.update(
+                DatabaseConstants.Series.TABLE_NAME,
+                values,
+                DatabaseConstants.Series.ID + "=" + serie.getId(),
+                null) > 0;
     }
 
     /** inserts a new exercise */
@@ -92,16 +127,6 @@ public class FitnessDatabaseInterface {
                 null,
                 null,
                 null);
-
-        /* alternative...
-        return database.query(DatabaseConstants.Exercise.TABLE_NAME,  // table name
-                new String [] {DatabaseConstants.Exercise.ID},        // columns to query
-                DatabaseConstants.Exercise.WORKOUT_ID + " =?",         // where workout_id
-                new String[]{String.valueOf(rowId)},                 // woId
-                null,
-                null,
-                null);
-         */
     }
 
     public Cursor fetchAllExercises(long woId) {
@@ -194,20 +219,13 @@ public class FitnessDatabaseInterface {
                         DatabaseConstants.Workout.ID,
                         DatabaseConstants.Workout.TYPE,
                         DatabaseConstants.Workout.DATE
-                }, null, null, null, null, DatabaseConstants.Workout.DATE);
+                },
+                null,
+                null,
+                null,
+                null,
+                DatabaseConstants.Workout.DATE + " ASC");
     }
 
-    /*
-    //TODO implement update series on UI
-    public boolean updateSeries(long rowId, Series serie){
-        ContentValues values = new ContentValues();
-        values.put(DatabaseConstants.Series.EXERCISE_ID, serie.getExerciseId());
-        return database.update(
-                DatabaseConstants.Series.TABLE_NAME,
-                values,
-                DatabaseConstants.Series.ID + "=" + serie.getId ,
-                null) > 0;
-    }
-    */
 }
 

@@ -1,37 +1,52 @@
 package hu.bme.aut.dbalazs.fitnesstracker;
 
 import android.app.Activity;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
-
 import hu.bme.aut.dbalazs.fitnesstracker.adapter.SeriesAdapter;
+import hu.bme.aut.dbalazs.fitnesstracker.application.FitnessApplication;
+import hu.bme.aut.dbalazs.fitnesstracker.database.FitnessDatabaseInterface;
+import hu.bme.aut.dbalazs.fitnesstracker.database.LoadSeriesTask;
 import hu.bme.aut.dbalazs.fitnesstracker.model.Series;
 
 
 public class SeriesListFragment extends Fragment {
+
+    private static final String TAG = "SeriesListFragment";
     public static final String SERIES_EXERCISE_NAME_TAG = "exercise_name";
     public static final String SERIES_TWO_PANE_TAG = "two_pane";
+    public static final String EXERCISE_ID = "exercise_id";
 
-    private ArrayList<Series> seriesList;
     private boolean twoPane=false;
     private SeriesAdapter adapter;
+    private LoadSeriesTask loadSeriesTask;
+    private FitnessDatabaseInterface databaseIf;
+    private long exerciseId;
+    private RecyclerView recyclerView;
 
     public SeriesListFragment() {}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        seriesList = createSeriesList();
-        adapter = new SeriesAdapter(seriesList, (AppCompatActivity)getActivity(), this, twoPane);
+        databaseIf = FitnessApplication.getDatabaseInterface();
+        //adapter = new SeriesAdapter(seriesList, (AppCompatActivity)getActivity(), this, twoPane);
+
+        if(!getArguments().containsKey(EXERCISE_ID)){
+            Log.d(TAG, "Didn't receive exercis id.");
+            return;
+        }
+        exerciseId = getArguments().getLong(EXERCISE_ID);
 
         /* set toolbar title to the current exercise */
         if (getArguments().containsKey(SERIES_EXERCISE_NAME_TAG)) {
@@ -40,6 +55,10 @@ public class SeriesListFragment extends Fragment {
             if (appBarLayout != null) {
                 appBarLayout.setTitle(getArguments().getString(SERIES_EXERCISE_NAME_TAG));
             }
+        }
+        else
+        {
+            Log.d(TAG, "Didn't receive exercise name.");
         }
         if(getArguments().containsKey(SERIES_TWO_PANE_TAG)){
             twoPane = getArguments().getBoolean(SERIES_TWO_PANE_TAG);
@@ -50,30 +69,55 @@ public class SeriesListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.series_list, container, false);
-        RecyclerView seriesListRV = (RecyclerView) rootView;
+        recyclerView = (RecyclerView) rootView;
         //exListRV.setLayoutManager(new GridLayoutManager(getActivity(), 2));
-        seriesListRV.setLayoutManager(new LinearLayoutManager(getActivity()));
-        seriesListRV.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setAdapter(adapter);
+        refreshList();
         return rootView;
     }
 
-    public void removeSerie(int position){
-        seriesList.remove(position);
-        adapter.notifyDataSetChanged();
+    /** Adds new serie received as parameter from CreateExerciseFragment through activity */
+    public void addSerie(Series series){
+        databaseIf.insertNewSeries(series, exerciseId);
+        refreshList();
     }
 
-    public void addSerie(Series newSerie){
-        seriesList.add(newSerie);
-        adapter.notifyDataSetChanged();
+    /** Fetches data from database */
+    private void refreshList(){
+        if (loadSeriesTask != null) {
+            loadSeriesTask.cancel(false);
+        }
+
+        loadSeriesTask = new LoadSeriesTask(this, databaseIf, exerciseId);
+        loadSeriesTask.execute();
     }
 
-    private ArrayList<Series> createSeriesList()
-    {
-        ArrayList<Series> tmpList = new ArrayList<Series>();
-        tmpList.add(new Series(35, 8, 1));
-        tmpList.add(new Series(35, 10, 2));
-        tmpList.add(new Series(40, 8, 2));
-        tmpList.add(new Series(45, 6, 2));
-        return tmpList;
+    /** */
+    public void removeSerie(long seriesId){
+        databaseIf.deleteSeries(seriesId);
+        refreshList();
+    }
+
+    public void showSeries(Cursor cursor) {
+        adapter = new SeriesAdapter(cursor, (AppCompatActivity) getActivity(), this, twoPane);
+        //recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setAdapter(adapter);
+    }
+
+    public void saveCurrentSeries(){
+        Cursor currentCursor = adapter.getCursor();
+        try{
+            while(currentCursor.moveToNext()){
+                Series currentSeries =
+            }
+        }
+        catch (Exception e){
+            Log.d(TAG, "Couldn't save all series.");
+            e.printStackTrace();
+        }
+        finally {
+            currentCursor.close();
+        }
     }
 }
