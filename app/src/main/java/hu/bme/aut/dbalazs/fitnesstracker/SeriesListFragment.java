@@ -40,7 +40,6 @@ public class SeriesListFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         databaseIf = FitnessApplication.getDatabaseInterface();
-        //adapter = new SeriesAdapter(seriesList, (AppCompatActivity)getActivity(), this, twoPane);
 
         if(!getArguments().containsKey(EXERCISE_ID)){
             Log.d(TAG, "Didn't receive exercis id.");
@@ -99,12 +98,26 @@ public class SeriesListFragment extends Fragment {
         refreshList();
     }
 
+    /**  */
     public void showSeries(Cursor cursor) {
         adapter = new SeriesAdapter(cursor, (AppCompatActivity) getActivity(), this, twoPane);
         //recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);
     }
 
+
+    /** saves current state of the list into database */
+    public void saveAll() {
+        if(adapter != null) {
+            for (int i = 0; i < adapter.getSeriesList().size(); i++)
+            {
+                Series currentSerie = adapter.getSeriesList().get(i);
+                databaseIf.updateSeries(currentSerie);
+            }
+        }
+    }
+
+    /*
     public void saveCurrentSeries(){
         Cursor currentCursor = adapter.getCursor();
         try{
@@ -120,4 +133,5 @@ public class SeriesListFragment extends Fragment {
             currentCursor.close();
         }
     }
+    */
 }

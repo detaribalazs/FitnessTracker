@@ -48,4 +48,8 @@ public class Series {
     public long getExerciseId() {
         return exerciseId;
     }
+
+    public void setExerciseId(long exerciseId) {
+        this.exerciseId = exerciseId;
+    }
 }

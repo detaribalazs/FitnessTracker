@@ -6,7 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,7 +13,7 @@ import android.view.ViewGroup;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import hu.bme.aut.dbalazs.fitnesstracker.R;
 import hu.bme.aut.dbalazs.fitnesstracker.SeriesListFragment;
@@ -35,18 +34,21 @@ public class SeriesAdapter extends CursorRecyclerViewAdapter<SeriesAdapter.Serie
         public TextView number;
         public Series serieItem;
 
-        public SeriesViewHolder(View itemView, SeriesListener listener) {
+        public SeriesViewHolder(View itemView) {
             super(itemView);
             repNP = itemView.findViewById(R.id.exerciseRep);
             repNP.setMaxValue(50);
             repNP.setMinValue(0);
-            repNP.setOnValueChangedListener(listener.getRepsListener());
             weightNP = itemView.findViewById(R.id.exerciseWeight);
             weightNP.setMinValue(0);
             weightNP.setMaxValue(250);
-            weightNP.setOnValueChangedListener(listener.getWeightListener());
             frameCV = itemView.findViewById(R.id.series_item_card);
             number = itemView.findViewById(R.id.series_number);
+        }
+
+        public void setListeners(int position){
+            repNP.setOnValueChangedListener(seriesListener.getRepsListener(position));
+            weightNP.setOnValueChangedListener(seriesListener.getWeightListener(position));
         }
     }
 
@@ -56,12 +58,13 @@ public class SeriesAdapter extends CursorRecyclerViewAdapter<SeriesAdapter.Serie
         this.twoPane = twoPane;
         this.fragment = fragment;
         this.cursor = cursor;
+        seriesListener = new SeriesListener();
     }
 
     @Override
     public SeriesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.series_item, parent, false);
-        return new SeriesViewHolder(v, seriesListener);
+        return new SeriesViewHolder(v);
     }
 
     @Override
@@ -70,6 +73,10 @@ public class SeriesAdapter extends CursorRecyclerViewAdapter<SeriesAdapter.Serie
         holder.weightNP.setValue(currentSerie.getWeight());
         holder.repNP.setValue(currentSerie.getReps());
         holder.number.setText("" + (cursor.getPosition() + 1) + ".");
+
+        seriesListener.setSeries(currentSerie, holder.getAdapterPosition());
+        holder.setListeners(holder.getAdapterPosition());
+
         holder.frameCV.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
@@ -90,82 +97,7 @@ public class SeriesAdapter extends CursorRecyclerViewAdapter<SeriesAdapter.Serie
         });
     }
 
-    public class SeriesListener {
-
-        public static final String TAG = "SeriesListener";
-
-        private NumberPickerListener weightListener;
-        private NumberPickerListener repsListener;
-
-        public SeriesListener(){
-            weightListener = new NumberPickerListener();
-            repsListener = new NumberPickerListener();
-        }
-
-        public SeriesListener(int count){
-            weightListener = new NumberPickerListener(count);
-            repsListener = new NumberPickerListener(count);
-        }
-
-        public NumberPickerListener getWeightListener() {
-            return weightListener;
-        }
-
-        public NumberPickerListener getRepsListener() {
-            return repsListener;
-        }
-
-        public void addElement(int position){
-            weightListener.addElement(int position);
-            repsListener.addElement(int position);
-        }
-
-        public int getPosition(){
-            if(weightListener.getPosition() == repsListener.getPosition()){
-                Log.e(TAG, "Unbalanced position");
-            }
-            return weightListener.getPosition();
-        }
-
-        public void setPosition(int p){
-            weightListener.setPosition(p);
-            repsListener.setPosition(p);
-        }
-
-        private class NumberPickerListener implements NumberPicker.OnValueChangeListener {
-
-            private ArrayList<Integer> dataSet;
-            private int position;
-
-            public NumberPickerListener() {
-                this.position = 0;
-            }
-
-            private void setCapacity(int count){
-                dataSet = new ArrayList<Integer>(count);
-            }
-
-            private void setPosition(int p) {
-                this.position = p;
-            }
-
-            private int getPosition() {
-                return this.position;
-            }
-
-            private void addElement(int position) {
-                if(dataSet.size() < position){
-                    while(dataSet.size() < position){
-                        dataSet.add(0);
-                    }
-                }
-                dataSet.add(0);
-            }
-
-            @Override
-            public void onValueChange(NumberPicker numberPicker, int oldValue, int newValue) {
-                dataSet.set(position, newValue);
-            }
-        }
+    public List<Series> getSeriesList(){
+        return seriesListener.getSeriesList();
     }
 }

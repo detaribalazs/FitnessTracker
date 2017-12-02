@@ -78,13 +78,15 @@ public class FitnessDatabaseInterface {
 
     /** creates a new series object from cursor data */
     public static Series createSeriesFromCursor(Cursor c){
-        return new Series(
+        Series series = new Series(
                 c.getInt(c.getColumnIndex(DatabaseConstants.Series.WEIGHT)),
                 c.getInt(c.getColumnIndex(DatabaseConstants.Series.REPS)),
                 c.getLong(c.getColumnIndex(DatabaseConstants.Series.ID)));
+        series.setExerciseId(c.getLong(c.getColumnIndex(DatabaseConstants.Series.EXERCISE_ID)));
+        return series;
     }
 
-    public boolean updateSeries(long rowId, Series serie){
+    public boolean updateSeries(Series serie){
         ContentValues values = new ContentValues();
         values.put(DatabaseConstants.Series.EXERCISE_ID, serie.getExerciseId());
         values.put(DatabaseConstants.Series.WEIGHT, serie.getWeight());
@@ -92,7 +94,7 @@ public class FitnessDatabaseInterface {
         return database.update(
                 DatabaseConstants.Series.TABLE_NAME,
                 values,
-                DatabaseConstants.Series.ID + "=" + serie.getId(),
+                DatabaseConstants.Series.ID + " = " + serie.getId(),
                 null) > 0;
     }
 

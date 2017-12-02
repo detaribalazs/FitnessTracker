@@ -72,6 +72,11 @@ public class SeriesListActivity extends AppCompatActivity {
             finish();
             return true;
         }
+        if(id == R.id.seriesListSave){
+            fragment.saveAll();
+            Snackbar.make(findViewById(R.id.series_fab), "Saved", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+        }
         return super.onOptionsItemSelected(item);
     }
 }
