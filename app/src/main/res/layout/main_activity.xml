@@ -1,9 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<android.widget.TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="hu.bme.aut.dbalazs.fitnesstracker.MainActivity">
-
-</android.support.constraint.ConstraintLayout>
+    tools:context="hu.bme.aut.dbalazs.fitnesstracker.MainActivity"
+    android:stretchColumns="0,1">
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp">
+        <android.support.v7.widget.CardView
+            android:padding="10dp"
+            app:cardCornerRadius="5dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:id="@+id/MainRunningSelect">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:weightSum="10">
+                <ImageView
+                    android:id="@+id/runImage"
+                    android:layout_centerHorizontal="true"
+                    android:layout_height="100dp"
+                    android:layout_width="100dp"
+                    android:paddingBottom="10dp"
+                    android:src="@drawable/ic_image_run"/>
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:text="Running"
+                    android:textSize="20dp"
+                    android:layout_alignWithParentIfMissing="true"
+                    android:layout_alignBottom="@+id/runImage"
+                    android:textAlignment="center"/>
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
+        <android.support.v7.widget.CardView
+            android:padding="10dp"
+            app:cardCornerRadius="5dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:id="@+id/MainWorkoutSelect">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:weightSum="10">
+                <ImageView
+                    android:id="@+id/workoutImage"
+                    android:layout_centerHorizontal="true"
+                    android:layout_height="100dp"
+                    android:layout_width="100dp"
+                    android:paddingBottom="10dp"
+                    android:src="@drawable/ic_image_workout"/>
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:text="Workout"
+                    android:textSize="20dp"
+                    android:layout_alignWithParentIfMissing="true"
+                    android:layout_alignBottom="@+id/workoutImage"
+                    android:textAlignment="center"/>
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
+    </TableRow>
+</android.widget.TableLayout>

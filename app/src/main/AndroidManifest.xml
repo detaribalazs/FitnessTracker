@@ -57,7 +57,7 @@
             android:name=".RunningTrackerActivity"
             android:label="@string/title_activity_running_tracker" />
         <activity android:name=".MainActivity"
-            android:theme="@style/DarkNoActionBar">
+            android:theme="@style/DarkDefault">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

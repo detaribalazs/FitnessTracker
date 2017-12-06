@@ -1,13 +1,17 @@
 package hu.bme.aut.dbalazs.fitnesstracker;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.NavUtils;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.TextView;
@@ -67,6 +71,11 @@ public class WorkoutListActivity extends AppCompatActivity implements WorkoutCre
                             .commit();
                 }
             });
+        }
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
         recyclerView = (RecyclerView) findViewById(R.id.workout_list);
@@ -151,5 +160,15 @@ public class WorkoutListActivity extends AppCompatActivity implements WorkoutCre
 
         loadWorkoutsTask = new LoadWorkoutsTask(this, databaseIf);
         loadWorkoutsTask.execute();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            NavUtils.navigateUpTo(this, new Intent(this, MainActivity.class));
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
