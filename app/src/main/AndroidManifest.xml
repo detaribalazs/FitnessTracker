@@ -2,12 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="hu.bme.aut.dbalazs.fitnesstracker">
 
-    <!--
-         The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
-         Google Maps Android API v2, but you must specify either coarse or fine
-         location permissions for the 'MyLocation' functionality. 
-    -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:name=".application.FitnessApplication"
@@ -19,8 +16,7 @@
         <activity
             android:name=".WorkoutListActivity"
             android:label="@string/title_workout_list"
-            android:theme="@style/DarkDefault">
-        </activity>
+            android:theme="@style/DarkDefault"></activity>
         <activity
             android:name=".ExerciseListActivity"
             android:label="@string/title_workout_detail"
@@ -56,7 +52,8 @@
         <activity
             android:name=".RunningTrackerActivity"
             android:label="@string/title_activity_running_tracker" />
-        <activity android:name=".MainActivity"
+        <activity
+            android:name=".MainActivity"
             android:theme="@style/DarkDefault">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -64,6 +61,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>

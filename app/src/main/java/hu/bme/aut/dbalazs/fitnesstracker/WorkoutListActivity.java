@@ -1,14 +1,20 @@
 package hu.bme.aut.dbalazs.fitnesstracker;
 
+import android.Manifest;
 import android.app.DatePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
@@ -34,6 +40,9 @@ public class WorkoutListActivity extends AppCompatActivity implements WorkoutCre
     private LoadWorkoutsTask loadWorkoutsTask;
     private FitnessDatabaseInterface databaseIf;
 
+    private static final int MY_PERMISSIONS_REQUEST_READ_STORAGE = 100;
+    private static final int MY_PERMISSIONS_REQUEST_WRITE_STORAGE = 101;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,12 +59,7 @@ public class WorkoutListActivity extends AppCompatActivity implements WorkoutCre
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    WorkoutCreateFragment fragment = new WorkoutCreateFragment();
-                    FragmentManager fm = getSupportFragmentManager();
-                    fm.beginTransaction().add(fragment, WorkoutCreateFragment.TAG)
-                            .addToBackStack(null)
-                            .show(fragment)
-                            .commit();
+                    handleWriteStoragePermission();
                 }
             });
         }
@@ -63,12 +67,7 @@ public class WorkoutListActivity extends AppCompatActivity implements WorkoutCre
             findViewById(R.id.workout_list_add_twoPane).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    WorkoutCreateFragment fragment = new WorkoutCreateFragment();
-                    FragmentManager fm = getSupportFragmentManager();
-                    fm.beginTransaction().add(fragment, WorkoutCreateFragment.TAG)
-                            .addToBackStack(null)
-                            .show(fragment)
-                            .commit();
+                    handleWriteStoragePermission();
                 }
             });
         }
@@ -132,7 +131,7 @@ public class WorkoutListActivity extends AppCompatActivity implements WorkoutCre
     public void onResume(){
         super.onResume();
         // Frissitjuk a lista tartalmat, ha visszater a user
-        refreshList();
+        handleReadStoragePermission();
     }
 
     @Override
@@ -162,6 +161,15 @@ public class WorkoutListActivity extends AppCompatActivity implements WorkoutCre
         loadWorkoutsTask.execute();
     }
 
+    private void addWorkout(){
+        WorkoutCreateFragment fragment = new WorkoutCreateFragment();
+        FragmentManager fm = getSupportFragmentManager();
+        fm.beginTransaction().add(fragment, WorkoutCreateFragment.TAG)
+                .addToBackStack(null)
+                .show(fragment)
+                .commit();
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -170,5 +178,87 @@ public class WorkoutListActivity extends AppCompatActivity implements WorkoutCre
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void handleReadStoragePermission() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+                alertDialogBuilder.setTitle(R.string.readStorageTitle);
+                alertDialogBuilder
+                        .setMessage(R.string.readStorageMessage)
+                        .setCancelable(false)
+                        .setNegativeButton(R.string.exit, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                                startActivity(i);
+                            }
+                        })
+                        .setPositiveButton(R.string.forward, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                                ActivityCompat.requestPermissions(WorkoutListActivity.this,
+                                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                                        MY_PERMISSIONS_REQUEST_READ_STORAGE);
+                            }
+                        });
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+            } else {
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        MY_PERMISSIONS_REQUEST_READ_STORAGE);
+            }
+        } else {
+            refreshList();
+        }
+    }
+
+    private void handleWriteStoragePermission() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+                alertDialogBuilder.setTitle(R.string.writeStorageTitle);
+                alertDialogBuilder
+                        .setMessage(R.string.writeStorageMessage)
+                        .setCancelable(false)
+                        .setNegativeButton(R.string.exit, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                                startActivity(i);
+                            }
+                        })
+                        .setPositiveButton(R.string.forward, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                                ActivityCompat.requestPermissions(WorkoutListActivity.this,
+                                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                        MY_PERMISSIONS_REQUEST_WRITE_STORAGE);
+                            }
+                        });
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+            } else {
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        MY_PERMISSIONS_REQUEST_WRITE_STORAGE);
+            }
+        } else {
+            addWorkout();
+        }
     }
 }
