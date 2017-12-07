@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NavUtils;
@@ -11,6 +12,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -23,15 +25,25 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import hu.bme.aut.dbalazs.fitnesstracker.events.LocationEvent;
+import hu.bme.aut.dbalazs.fitnesstracker.location.ServiceLocation;
+
 public class RunningTrackerActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private static final int MY_PERMISSION_REQUEST_LOCATION = 102;
+    private static final String TAG = "RunningTrackerActivity";
     private GoogleMap mMap;
     private SupportMapFragment mMapFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Intent i = new Intent(getApplicationContext(),ServiceLocation.class);
+        startService(i);
         setContentView(R.layout.running_activity);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
 
@@ -44,10 +56,18 @@ public class RunningTrackerActivity extends AppCompatActivity implements OnMapRe
     @Override
     protected void onResume() {
         super.onResume();
+        // register to location updates
+        EventBus.getDefault().register(this);
         handleLocationPermission();
         mMapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mMapFragment.getMapAsync(this);
+    }
+
+    @Override
+    protected void onPause() {
+        EventBus.getDefault().unregister(this);
+        super.onPause();
     }
 
     /**
@@ -62,14 +82,16 @@ public class RunningTrackerActivity extends AppCompatActivity implements OnMapRe
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        updateLocation();
     }
 
-    private void updateLocation(){
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+    /** update marker on the map according to the new location received from ServiceLocation
+     *
+      * @param location the newest location value
+     */
+    private void updateLocation(Location location){
+        LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
+        mMap.addMarker(new MarkerOptions().position(position).title("Current position"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
     }
 
     @Override
@@ -97,6 +119,7 @@ public class RunningTrackerActivity extends AppCompatActivity implements OnMapRe
         return super.onOptionsItemSelected(item);
     }
 
+    /** Handles the permission for accessing the location of the device. */
     private void handleLocationPermission() {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -133,5 +156,12 @@ public class RunningTrackerActivity extends AppCompatActivity implements OnMapRe
                         MY_PERMISSION_REQUEST_LOCATION);
             }
         }
+    }
+
+    /** The callback called when new location arrives. */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onNewLocation(LocationEvent event) {
+        Log.d(TAG, "New location: " + event.getLocation().getLongitude());
+        updateLocation(event.getLocation());
     }
 }
