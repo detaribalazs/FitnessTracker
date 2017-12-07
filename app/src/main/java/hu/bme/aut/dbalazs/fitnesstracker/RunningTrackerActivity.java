@@ -6,10 +6,11 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -22,7 +23,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class RunningTrackerActivity extends FragmentActivity implements OnMapReadyCallback {
+public class RunningTrackerActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private static final int MY_PERMISSION_REQUEST_LOCATION = 102;
     private GoogleMap mMap;
@@ -34,8 +35,8 @@ public class RunningTrackerActivity extends FragmentActivity implements OnMapRea
         setContentView(R.layout.running_activity);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
 
-        android.app.ActionBar actionBar = getActionBar();
-        if (actionBar != null) {
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null){
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
     }
@@ -43,6 +44,7 @@ public class RunningTrackerActivity extends FragmentActivity implements OnMapRea
     @Override
     protected void onResume() {
         super.onResume();
+        handleLocationPermission();
         mMapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mMapFragment.getMapAsync(this);
@@ -60,8 +62,7 @@ public class RunningTrackerActivity extends FragmentActivity implements OnMapRea
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
-        handleLocationPermission();
+        updateLocation();
     }
 
     private void updateLocation(){
@@ -121,7 +122,6 @@ public class RunningTrackerActivity extends FragmentActivity implements OnMapRea
                                 ActivityCompat.requestPermissions(RunningTrackerActivity.this,
                                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                                         MY_PERMISSION_REQUEST_LOCATION);
-                                updateLocation();
                             }
                         });
                 AlertDialog alertDialog = alertDialogBuilder.create();
@@ -132,8 +132,6 @@ public class RunningTrackerActivity extends FragmentActivity implements OnMapRea
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         MY_PERMISSION_REQUEST_LOCATION);
             }
-        } else {
-            updateLocation();
         }
     }
 }
