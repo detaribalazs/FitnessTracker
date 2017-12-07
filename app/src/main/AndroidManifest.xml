@@ -63,7 +63,7 @@
             </intent-filter>
         </activity>
         <service
-            android:name=".location.ServiceLocation"
+            android:name=".location.LocationService"
             android:label="Location Service"
             android:permission="android.permission.ACCESS_FINE_LOCATION" />
 
