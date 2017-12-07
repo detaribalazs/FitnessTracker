@@ -7,8 +7,13 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.NavUtils;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -21,20 +26,26 @@ public class RunningTrackerActivity extends FragmentActivity implements OnMapRea
 
     private static final int MY_PERMISSION_REQUEST_LOCATION = 102;
     private GoogleMap mMap;
+    private SupportMapFragment mMapFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.running_activity);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+
+        android.app.ActionBar actionBar = getActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+        mMapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        mMapFragment.getMapAsync(this);
     }
 
     /**
@@ -60,6 +71,31 @@ public class RunningTrackerActivity extends FragmentActivity implements OnMapRea
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.running_tracker_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            NavUtils.navigateUpTo(this, new Intent(this, MainActivity.class));
+            return true;
+        }
+        else if (id == R.id.runningStart)
+        {
+            Toast.makeText(getApplicationContext(), "Exercise started", Toast.LENGTH_LONG).show();
+        }
+        else if (id == R.id.runningEnd){
+            Toast.makeText(getApplicationContext(), "Exercise over", Toast.LENGTH_LONG).show();
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     private void handleLocationPermission() {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -76,8 +112,7 @@ public class RunningTrackerActivity extends FragmentActivity implements OnMapRea
                         .setCancelable(false)
                         .setNegativeButton(R.string.exit, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                                Intent i = new Intent(getApplicationContext(), MainActivity.class);
-                                startActivity(i);
+                                dialog.cancel();
                             }
                         })
                         .setPositiveButton(R.string.forward, new DialogInterface.OnClickListener() {
@@ -86,6 +121,7 @@ public class RunningTrackerActivity extends FragmentActivity implements OnMapRea
                                 ActivityCompat.requestPermissions(RunningTrackerActivity.this,
                                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                                         MY_PERMISSION_REQUEST_LOCATION);
+                                updateLocation();
                             }
                         });
                 AlertDialog alertDialog = alertDialogBuilder.create();

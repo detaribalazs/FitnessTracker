@@ -27,4 +27,6 @@
     <string name="writeStorageMessage">Write access to external storage needed.</string>
     <string name="locationPermissionTitle">Access to location</string>
     <string name="locationPermissionMessage">Access to location needed for tracking exercise.</string>
+    <string name="startRunning">Start exercise</string>
+    <string name="endRunning">End exercise</string>
 </resources>

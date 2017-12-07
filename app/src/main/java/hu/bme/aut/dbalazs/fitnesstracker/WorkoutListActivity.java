@@ -237,8 +237,7 @@ public class WorkoutListActivity extends AppCompatActivity implements WorkoutCre
                         .setCancelable(false)
                         .setNegativeButton(R.string.exit, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                                Intent i = new Intent(getApplicationContext(), MainActivity.class);
-                                startActivity(i);
+                                dialog.cancel();
                             }
                         })
                         .setPositiveButton(R.string.forward, new DialogInterface.OnClickListener() {
@@ -247,6 +246,7 @@ public class WorkoutListActivity extends AppCompatActivity implements WorkoutCre
                                 ActivityCompat.requestPermissions(WorkoutListActivity.this,
                                         new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                                         MY_PERMISSIONS_REQUEST_WRITE_STORAGE);
+                                addWorkout();
                             }
                         });
                 AlertDialog alertDialog = alertDialogBuilder.create();
