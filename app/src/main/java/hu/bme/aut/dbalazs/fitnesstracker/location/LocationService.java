@@ -1,7 +1,6 @@
 package hu.bme.aut.dbalazs.fitnesstracker.location;
 
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
@@ -18,7 +17,6 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 
-import hu.bme.aut.dbalazs.fitnesstracker.MainActivity;
 import hu.bme.aut.dbalazs.fitnesstracker.R;
 import hu.bme.aut.dbalazs.fitnesstracker.RunningTrackerActivity;
 import hu.bme.aut.dbalazs.fitnesstracker.events.ActivityStateChangedEvent;
@@ -28,7 +26,7 @@ import hu.bme.aut.dbalazs.fitnesstracker.events.LocationListEvent;
 
 public class LocationService extends Service implements LocationListener {
 
-    private static final int NOTIFICATION_ID = 104;
+    private static final int NOTIFICATION_ID = 99;
     public static final String BR_NEW_LOCATION = "BR_NEW_LOCATION";
     public static final String KEY_LOCATION = "KEY_LOCATION";
     private static final String TAG = "LocationService";
@@ -40,8 +38,6 @@ public class LocationService extends Service implements LocationListener {
     private ArrayList<Location> locationList = new ArrayList<>();
     private boolean exerciseInProgress = false;
     private Location lastLocation = null;
-    private long startingTime = 0;
-    private Notification notification;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -50,7 +46,7 @@ public class LocationService extends Service implements LocationListener {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        lastLocation = null;
+        //lastLocation = null;
         if (!locationMonitorRunning) {
             locationMonitorRunning = true;
             ldLocationManager = new LDLocationManager(getApplicationContext(), this);
@@ -110,8 +106,8 @@ public class LocationService extends Service implements LocationListener {
         Log.d(TAG, "Activity state changed: " + event.getActivityState().toString());
         activityState = event.getActivityState();
         if(event.getActivityState() == RunningTrackerActivity.ActivityState.STARTED){
-            stopForeground(true);
             if(exerciseInProgress){
+                stopForeground(true);
                 EventBus.getDefault().post(new LocationListEvent(locationList));
             }
             else{
@@ -121,7 +117,8 @@ public class LocationService extends Service implements LocationListener {
         // Activity stopped
         else{
             if(exerciseInProgress) {
-                startForeground(NOTIFICATION_ID, createNotification("Running"));
+                Notification n = createNotification("Running exercise in progress!");
+                startForeground(NOTIFICATION_ID, n);
             }
             else{
                 stopSelf();
@@ -133,14 +130,17 @@ public class LocationService extends Service implements LocationListener {
     public void onExerciseStateChanged(ExerciseStateEvent event) {
         Log.d(TAG, "Exercise state: " + (event.isStarted() ? "started" : "over"));
         if(event.isStarted()){
+            locationList.clear();
             locationList.add(lastLocation);
         }
         exerciseInProgress = event.isStarted();
-        startingTime = System.currentTimeMillis();
+        if(!exerciseInProgress){
+            EventBus.getDefault().post(new LocationEvent(lastLocation));
+        }
     }
 
     private Notification createNotification(String text) {
-        Intent notificationIntent = new Intent(this, MainActivity.class);
+        Intent notificationIntent = new Intent(this, RunningTrackerActivity.class);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent contentIntent = PendingIntent.getActivity(this,
                 NOTIFICATION_ID,
@@ -154,12 +154,4 @@ public class LocationService extends Service implements LocationListener {
                 .setContentIntent(contentIntent).build();
         return  notification;
     }
-
-    private void updateNotification(String text) {
-        Notification notification = createNotification(text);
-        NotificationManager notifMan = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        notifMan.notify(NOTIFICATION_ID, notification);
-    }
-
-
 }

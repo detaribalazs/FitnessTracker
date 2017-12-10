@@ -150,19 +150,67 @@ public class RunningTrackerActivity extends AppCompatActivity implements OnMapRe
         }
         else if (id == R.id.runningStart)
         {
-            // get current position from the last marker and set it as starting point
-            LatLng tmp = currentMarker.getPosition();
-            currentMarker.remove();
-            startingMarker = mMap.addMarker(new MarkerOptions().position(tmp).title("Current position"));
-            Toast.makeText(getApplicationContext(), "Exercise started", Toast.LENGTH_LONG).show();
+            if(currentMarker != null) {
+                // get current position from the last marker and set it as starting point
+                LatLng tmp = currentMarker.getPosition();
+                currentMarker.remove();
+                startingMarker = mMap.addMarker(new MarkerOptions().position(tmp).title("Current position"));
+            }
+            Toast.makeText(getApplicationContext(), "Exercise started", Toast.LENGTH_SHORT).show();
             EventBus.getDefault().post(new ExerciseStateEvent(true));
         }
         else if (id == R.id.runningEnd){
-            Toast.makeText(getApplicationContext(), "Exercise over", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "Exercise over", Toast.LENGTH_SHORT).show();
             EventBus.getDefault().post(new ExerciseStateEvent(false));
+            showRunningResult();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showRunningResult(){
+        if(locationList == null){
+            Log.d(TAG, "locationList is null");
+            return;
+        }
+        if(locationList.size() > 1) {
+            long elapsedTimeSecs = (locationList.get(locationList.size() - 1).getTime() - locationList.get(0).getTime()) / 1000;
+            float distanceMeters = 0;
+            for (int i = 0; i < locationList.size() - 1; i++) {
+                distanceMeters += locationList.get(i).distanceTo(locationList.get(i + 1));
+            }
+            float avgSpeedKph = (float) ((distanceMeters / elapsedTimeSecs) * 3.6);
+            AlertDialog.Builder adBuilder = new AlertDialog.Builder(this);
+            adBuilder.setTitle("Running result")
+                    .setMessage("You run " + distanceMeters + " meters in " +
+                            elapsedTimeSecs + " seconds. Your average speed was " +
+                            avgSpeedKph + " km/h.")
+                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.cancel();
+                        }
+                    });
+            AlertDialog dialog = adBuilder.create();
+            dialog.show();
+            locationList.clear();
+            mMap.clear();
+        }
+        else{
+            AlertDialog.Builder adBuilder = new AlertDialog.Builder(this);
+            adBuilder.setTitle("Running result")
+                    .setMessage("Too short exercise.")
+                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.cancel();
+                        }
+                    });
+            AlertDialog dialog = adBuilder.create();
+            dialog.show();
+            locationList.clear();
+            mMap.clear();
+        }
     }
 
     /** Handles the permission for accessing the location of the device. */
@@ -208,8 +256,13 @@ public class RunningTrackerActivity extends AppCompatActivity implements OnMapRe
         if(mMap == null){
             return;
         }
-        if(locationList.size() < 2 ){
+        if(locationList.size() == 0 ){
             return;
+        }
+        if(locationList.size() == 1){
+            Location loc = locationList.get(0);
+            LatLng position = new LatLng(loc.getLatitude(), loc.getLongitude());
+            startingMarker = mMap.addMarker(new MarkerOptions().position(position).title("Start"));
         }
         if(exerciseRoute != null)
         {
@@ -217,17 +270,16 @@ public class RunningTrackerActivity extends AppCompatActivity implements OnMapRe
         }
         PolylineOptions options = new PolylineOptions();
 
-        options.color( Color.parseColor( "#CC0000FF" ) );
-        options.width( 5 );
+        options.color( Color.parseColor( "#CC81AFC6" ) );
+        options.width( 20 );
         options.visible( true );
 
-        int i = 0;
         for ( Location loc : locationList )
         {
             // starting marker needs to be redrawn
             if(startingMarker == null){
                 LatLng position = new LatLng(loc.getLatitude(), loc.getLongitude());
-                startingMarker = mMap.addMarker(new MarkerOptions().position(position));
+                startingMarker = mMap.addMarker(new MarkerOptions().position(position).title("Start"));
             }
             options.add( new LatLng( loc.getLatitude(),
                     loc.getLongitude() ) );
@@ -240,9 +292,7 @@ public class RunningTrackerActivity extends AppCompatActivity implements OnMapRe
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onNewLocation(LocationEvent event) {
         Log.d(TAG, "New location: " + event.getLocation().getLongitude());
-        if(mMap == null){
-            lastLocation = event.getLocation();
-        }
+        lastLocation = event.getLocation();
         updateLocation(event.getLocation());
     }
 
@@ -251,8 +301,11 @@ public class RunningTrackerActivity extends AppCompatActivity implements OnMapRe
     public void onNewLocationList(LocationListEvent event) {
         Log.d(TAG, "New location list arrived: " + event.getLocationList().size());
         if(mMap == null){
-            locationList = event.getLocationList();
+            if(currentMarker != null){
+                currentMarker.remove();
+            }
         }
-        drawRoute(event.getLocationList());
+        locationList = event.getLocationList();
+        drawRoute(locationList);
     }
 }

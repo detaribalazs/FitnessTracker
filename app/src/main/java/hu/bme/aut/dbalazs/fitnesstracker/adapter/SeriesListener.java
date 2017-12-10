@@ -9,7 +9,7 @@ import hu.bme.aut.dbalazs.fitnesstracker.model.Series;
 
 public class SeriesListener {
 
-    public static final String TAG = "SeriesListener";
+    public static final String  TAG = "SeriesListener";
 
     private ArrayList<NumberPickerListener> weightListener;
     private ArrayList<NumberPickerListener> repsListener;
